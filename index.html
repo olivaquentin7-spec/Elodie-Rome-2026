@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rome 2026 — Coach Complet</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d0f;--s1:#141417;--s2:#1c1c21;--s3:#222228;--border:#2a2a32;
+  --accent:#e8ff47;--orange:#ff6b35;--blue:#47c5ff;--text:#f0f0f0;
+  --muted:#6b6b7a;--p1:#47c5ff;--p2:#e8ff47;--p3:#ff6b35;--p4:#c084fc;
+  --green:#4ade80;--pink:#f472b6;--teal:#34d399;--gold:#fbbf24;--gym:#a78bfa;--red:#f87171;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;min-height:100vh}
+button{cursor:pointer;font-family:'DM Sans',sans-serif}
+input,textarea,select{font-family:'DM Sans',sans-serif;font-size:13px}
+a{color:inherit;text-decoration:none}
+
+/* ── HERO ── */
+.hero{padding:36px 28px 28px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;background:linear-gradient(135deg,var(--bg) 60%,rgba(232,255,71,.02))}
+.hero-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.hero-tag::before{content:'';width:16px;height:1px;background:var(--accent)}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,5.5vw,72px);line-height:.9;letter-spacing:.02em;margin-bottom:12px}
+.hero h1 span{color:var(--accent)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.meta-pill{display:flex;align-items:center;gap:5px;background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:5px 10px;font-size:11px}
+.meta-pill .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
+/* ── TABS ── */
+.tabs-wrap{position:sticky;top:0;z-index:200;background:var(--bg);border-bottom:1px solid var(--border);padding:0 28px;display:flex;overflow-x:auto;scrollbar-width:none}
+.tabs-wrap::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;background:none;border:none;padding:13px 16px;font-size:12px;font-weight:400;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--pc,var(--accent))}
+.tab-btn .pdot{width:6px;height:6px;border-radius:50%;background:var(--pc,var(--accent))}
+
+/* ── CONTENT ── */
+.content{padding:24px 28px;max-width:1200px}
+.panel{display:none}
+.panel.active{display:block}
+
+/* ── DASHBOARD ── */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--sc,var(--accent))}
+.stat-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--text);letter-spacing:.03em;line-height:1}
+.stat-unit{font-size:10px;color:var(--muted);margin-top:2px}
+.stat-trend.up{color:var(--green);font-size:10px}
+.stat-trend.down{color:var(--red);font-size:10px}
+
+.dash-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.dash-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px}
+.dash-card h3{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.04em;margin-bottom:12px}
+
+.prog-bars{display:flex;flex-direction:column;gap:7px}
+.prog-row{display:flex;align-items:center;gap:8px;font-size:11px}
+.prog-label{width:90px;color:var(--muted);font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0}
+.prog-bar-wrap{flex:1;height:5px;background:var(--s2);border-radius:3px;overflow:hidden}
+.prog-bar{height:100%;border-radius:3px;transition:width .6s ease}
+.prog-pct{width:30px;text-align:right;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)}
+
+.ai-tip{background:linear-gradient(135deg,rgba(232,255,71,.04),rgba(71,197,255,.02));border:1px solid rgba(232,255,71,.12);border-radius:9px;padding:12px 14px;margin-bottom:14px}
+.ai-tip-header{display:flex;align-items:center;gap:7px;margin-bottom:6px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}
+.ai-tip p{font-size:11px;color:var(--muted);line-height:1.7}
+
+.sess-log-item{display:flex;align-items:center;gap:8px;padding:7px 9px;background:var(--s2);border-radius:6px;margin-bottom:5px;border:1px solid var(--border)}
+.sess-log-type{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.08em;padding:2px 6px;border-radius:3px;flex-shrink:0;text-transform:uppercase}
+.pill-gym{color:var(--gym);border:1px solid rgba(167,139,250,.3);background:rgba(167,139,250,.08)}
+.pill-run{color:var(--blue);border:1px solid rgba(71,197,255,.3);background:rgba(71,197,255,.06)}
+.pill-trail{color:var(--green);border:1px solid rgba(74,222,128,.3);background:rgba(74,222,128,.06)}
+.sess-log-name{flex:1;font-size:11px}
+.sess-log-date{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)}
+
+.weight-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.weight-log{display:flex;flex-direction:column;gap:3px;max-height:130px;overflow-y:auto;margin-top:8px}
+.weight-entry{display:flex;justify-content:space-between;padding:4px 8px;background:var(--s2);border-radius:5px;font-size:11px}
+.weight-entry-date{color:var(--muted);font-family:'DM Mono',monospace;font-size:9px}
+
+/* ── PLANNING ── */
+.week-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px;transition:border-color .2s}
+.week-card:hover{border-color:#3a3a44}
+.week-header{display:flex;align-items:center;padding:11px 14px;cursor:pointer;gap:10px;user-select:none}
+.week-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--wc,var(--accent));width:46px;flex-shrink:0;letter-spacing:.04em}
+.week-info{flex:1}
+.week-title{font-size:12px;font-weight:600}
+.week-sub{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+.week-prog{display:flex;align-items:center;gap:5px}
+.week-prog-bar{width:70px;height:3px;background:var(--s2);border-radius:2px;overflow:hidden}
+.week-prog-fill{height:100%;background:var(--green);border-radius:2px;transition:width .3s}
+.week-prog-txt{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted)}
+.toggle-i{color:var(--muted);font-size:13px;transition:transform .3s;flex-shrink:0}
+.week-card.open .toggle-i{transform:rotate(180deg)}
+.week-body{display:none;padding:0 14px 14px;border-top:1px solid var(--border)}
+.week-card.open .week-body{display:block}
+
+/* ── DAY GRID ── */
+.day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px}
+.day-col{display:flex;flex-direction:column;gap:3px}
+.day-label-h{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;padding:4px 2px;border-bottom:1px solid var(--border)}
+.day-rest{background:var(--s2);border-radius:6px;border:1px dashed var(--border);padding:10px 4px;text-align:center;color:var(--muted);font-size:8px;font-family:'DM Mono',monospace;min-height:50px;display:flex;align-items:center;justify-content:center}
+
+/* ── SESSION CARD IN PLANNING ── */
+.day-sess{border-radius:6px;border:1px solid var(--border);overflow:hidden;position:relative;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.day-sess:hover{border-color:rgba(255,255,255,.15);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.day-sess.done{border-color:rgba(74,222,128,.3)!important}
+.day-sess.done::after{content:'✓';position:absolute;top:3px;right:4px;font-size:11px;color:var(--green);font-weight:700;z-index:2}
+.day-sess.skipped{opacity:.5}
+.day-sess.skipped::after{content:'✗';position:absolute;top:3px;right:4px;font-size:11px;color:var(--red);font-weight:700;z-index:2}
+.ds-head{padding:5px 7px;display:flex;align-items:flex-start;justify-content:space-between}
+.ds-type{font-size:7px;font-family:'DM Mono',monospace;letter-spacing:.07em;text-transform:uppercase;line-height:1.3}
+.ds-dur{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:.04em;flex-shrink:0}
+.ds-name{padding:0 7px 4px;font-size:9px;font-weight:600;line-height:1.35;color:var(--text)}
+.ds-sub{padding:0 7px 5px;font-size:8px;color:var(--muted);line-height:1.3}
+.ds-rating{padding:0 7px 4px;font-size:9px;color:var(--gold)}
+.ds-actions{padding:3px 7px 6px;display:flex;gap:3px;flex-wrap:wrap}
+.btn-xs{font-size:8px;font-family:'DM Mono',monospace;padding:2px 6px;border-radius:3px;border:1px solid;letter-spacing:.05em;transition:all .12s}
+.btn-done{color:var(--green);border-color:rgba(74,222,128,.25);background:rgba(74,222,128,.08)}
+.btn-done:hover{background:rgba(74,222,128,.2)}
+.btn-skip{color:var(--red);border-color:rgba(248,113,113,.2);background:rgba(248,113,113,.06)}
+.btn-undo{color:var(--muted);border-color:rgba(107,107,122,.25);background:rgba(107,107,122,.06)}
+.btn-undo:hover{background:rgba(107,107,122,.18)}
+.btn-detail{color:var(--blue);border-color:rgba(71,197,255,.25);background:rgba(71,197,255,.06)}
+.btn-log{color:var(--gym);border-color:rgba(167,139,250,.25);background:rgba(167,139,250,.06)}
+
+/* ── SESSION DETAIL MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:1000;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:14px;width:100%;max-width:640px;max-height:92vh;overflow-y:auto;position:relative}
+.modal-header{padding:20px 20px 0;position:sticky;top:0;background:var(--s1);z-index:10;border-bottom:1px solid var(--border);padding-bottom:14px}
+.modal-header-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.04em}
+.modal-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.modal-close{background:var(--s2);border:1px solid var(--border);color:var(--muted);width:26px;height:26px;border-radius:50%;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-body{padding:16px 20px 20px}
+
+/* Detail drill rows */
+.detail-drills{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.detail-drill{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--s2);border-radius:6px;border:1px solid var(--border)}
+.dd-icon{font-size:13px;flex-shrink:0}
+.dd-text{flex:1;font-size:12px;line-height:1.4}
+.dd-allure{font-family:'DM Mono',monospace;font-size:10px;padding:2px 7px;border-radius:3px;flex-shrink:0;white-space:nowrap}
+.a-fond{color:#94a3b8;background:rgba(148,163,184,.08)}
+.a-blue{color:var(--blue);background:rgba(71,197,255,.08)}
+.a-yellow{color:var(--accent);background:rgba(232,255,71,.08)}
+.a-orange{color:var(--orange);background:rgba(255,107,53,.1)}
+.a-pink{color:var(--pink);background:rgba(244,114,182,.08)}
+.a-green{color:var(--green);background:rgba(74,222,128,.08)}
+.a-purple{color:var(--gym);background:rgba(167,139,250,.08)}
+.a-muted{color:var(--muted);background:rgba(107,107,122,.08)}
+.a-teal{color:var(--teal);background:rgba(52,211,153,.08)}
+.a-gold{color:var(--gold);background:rgba(251,191,36,.08)}
+
+.detail-tip{padding:9px 12px;border-radius:6px;font-size:11px;line-height:1.6;margin-bottom:12px}
+.tip-y{background:rgba(232,255,71,.05);border:1px solid rgba(232,255,71,.15);color:rgba(232,255,71,.85)}
+.tip-b{background:rgba(71,197,255,.05);border:1px solid rgba(71,197,255,.15);color:rgba(71,197,255,.85)}
+.tip-o{background:rgba(255,107,53,.05);border:1px solid rgba(255,107,53,.15);color:rgba(255,107,53,.85)}
+.tip-g{background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.15);color:rgba(74,222,128,.85)}
+.tip-p{background:rgba(244,114,182,.05);border:1px solid rgba(244,114,182,.15);color:rgba(244,114,182,.85)}
+.tip-v{background:rgba(192,132,252,.05);border:1px solid rgba(192,132,252,.15);color:rgba(192,132,252,.85)}
+.tip-gym{background:rgba(167,139,250,.05);border:1px solid rgba(167,139,250,.15);color:rgba(167,139,250,.85)}
+
+/* Gym exercise detail */
+.gym-ex-detail{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px}
+.gym-ex-detail-name{font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.gym-ex-sets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.gym-set-box{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:6px 8px;text-align:center}
+.gym-set-label{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-bottom:4px}
+.gym-set-inputs{display:flex;flex-direction:column;gap:3px}
+.gym-set-input{background:var(--s2);border:1px solid var(--border);border-radius:4px;padding:4px 6px;color:var(--text);font-size:11px;width:100%;text-align:center}
+.gym-set-input:focus{outline:none;border-color:var(--gym)}
+.gym-prev{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:3px}
+
+/* ── INLINE SESSION DETAIL ── */
+.sess-detail{display:none;border-top:1px solid var(--border);padding:10px 10px 8px;background:rgba(0,0,0,.15)}
+.sess-detail.open{display:block}
+.sess-detail-title{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;display:flex;align-items:center;justify-content:space-between}
+.inline-drill{display:flex;align-items:center;gap:6px;padding:5px 7px;background:var(--s1);border-radius:5px;border:1px solid var(--border);margin-bottom:3px}
+.id-icon{font-size:11px;flex-shrink:0}
+.id-text{flex:1;font-size:10px;line-height:1.35;color:var(--text)}
+.id-allure{font-family:'DM Mono',monospace;font-size:9px;padding:1px 5px;border-radius:3px;flex-shrink:0;white-space:nowrap}
+.inline-tip{padding:6px 8px;border-radius:5px;font-size:9px;line-height:1.5;margin-top:5px}
+.inline-gym-ex{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--s1);border-radius:5px;border:1px solid var(--border);margin-bottom:3px}
+.ige-name{font-size:10px;font-weight:600;flex:1}
+.ige-sets{font-family:'DM Mono',monospace;font-size:9px;color:var(--gym);flex-shrink:0}
+.ige-tip{font-size:9px;color:var(--muted);flex-shrink:0;margin-left:6px;max-width:120px;text-align:right;line-height:1.3}
+.sess-detail-footer{margin-top:7px;display:flex;gap:5px}
+.btn-detail-log{font-size:9px;font-family:'DM Mono',monospace;padding:4px 9px;border-radius:4px;border:1px solid;letter-spacing:.05em;color:var(--gym);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.07)}
+.prev-perf-note{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.12);padding:4px 7px;border-radius:4px;margin-bottom:5px}
+
+/* Rating */
+.form-group{margin-bottom:12px}
+.form-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;display:block}
+.form-input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:8px 11px;color:var(--text);font-size:12px;transition:border-color .2s}
+.form-input:focus{outline:none;border-color:var(--accent)}
+.form-textarea{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:8px 11px;color:var(--text);font-size:12px;resize:vertical;min-height:60px;transition:border-color .2s}
+.form-textarea:focus{outline:none;border-color:var(--accent)}
+.rating-wrap{display:flex;gap:5px;flex-wrap:wrap}
+.rating-star{font-size:20px;cursor:pointer;color:var(--muted);transition:color .12s;user-select:none}
+.rating-star:hover,.rating-star.on{color:var(--gold)}
+.btn-primary{background:var(--accent);color:var(--bg);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.08em;padding:10px 20px;border:none;border-radius:7px;transition:opacity .2s;width:100%;margin-top:6px}
+.btn-primary:hover{opacity:.85}
+
+/* ── GYM TRACKER ── */
+.hist-card{background:var(--s1);border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:8px}
+.hist-head{padding:10px 13px;display:flex;align-items:center;justify-content:space-between;background:rgba(167,139,250,.06)}
+.hist-date{font-family:'DM Mono',monospace;font-size:9px;color:var(--gym)}
+.hist-type{font-size:11px;font-weight:600}
+.hist-body{padding:8px 13px}
+.hist-exs{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:5px;margin-bottom:6px}
+.hist-ex{background:var(--s2);border-radius:5px;padding:6px 9px;font-size:10px}
+.hist-ex-name{font-weight:600;margin-bottom:2px;color:var(--text)}
+.hist-ex-sets{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)}
+.hist-note{font-size:10px;color:var(--muted);padding:6px 9px;background:var(--s2);border-radius:5px;margin-top:3px;font-style:italic}
+.perf-chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.perf-ex-card{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:11px}
+.perf-ex-name{font-size:10px;font-weight:600;margin-bottom:7px;color:var(--gym)}
+.perf-line{display:flex;align-items:center;gap:5px;font-size:9px;margin-bottom:2px}
+.perf-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
+/* ── SHOPPING LIST ── */
+.shop-layout{display:grid;grid-template-columns:1fr 340px;gap:18px}
+.shop-main{display:flex;flex-direction:column;gap:14px}
+.shop-cat-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.shop-cat-head{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.shop-cat-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+.shop-cat-count{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--s2);padding:2px 7px;border-radius:3px}
+.shop-items{padding:0 14px 12px;display:flex;flex-direction:column;gap:4px}
+.shop-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--s2);border-radius:6px;border:1px solid var(--border);transition:opacity .2s;cursor:pointer}
+.shop-item.checked{opacity:.45}
+.shop-item.checked .shop-item-name{text-decoration:line-through}
+.shop-cb{width:16px;height:16px;border-radius:4px;border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--bg);transition:all .15s}
+.shop-item.checked .shop-cb{background:var(--green);border-color:var(--green)}
+.shop-cb-check{color:var(--bg);font-size:10px;font-weight:700;display:none}
+.shop-item.checked .shop-cb-check{display:block}
+.shop-item-name{flex:1;font-size:12px}
+.shop-item-qty{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);flex-shrink:0}
+.shop-item-del{color:var(--muted);font-size:11px;padding:1px 4px;border-radius:3px;background:none;border:none;opacity:.5;transition:opacity .15s;flex-shrink:0}
+.shop-item-del:hover{opacity:1;color:var(--red)}
+
+.shop-add{padding:8px 14px 14px;display:flex;gap:7px;border-top:1px solid var(--border)}
+.shop-add input{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px}
+.shop-add input:focus{outline:none;border-color:var(--accent)}
+.shop-add select{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-size:11px}
+.shop-add button{background:var(--accent);border:none;border-radius:6px;padding:7px 12px;font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--bg);flex-shrink:0}
+
+.shop-sidebar{display:flex;flex-direction:column;gap:12px}
+.shop-side-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:14px}
+.shop-side-card h3{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.04em;margin-bottom:10px}
+.shop-stat{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:var(--s2);border-radius:5px;font-size:11px;margin-bottom:4px}
+.shop-stat-val{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent)}
+.ai-suggest-btn{background:var(--s2);border:1px solid rgba(232,255,71,.2);color:var(--accent);font-size:11px;padding:7px 12px;border-radius:6px;width:100%;margin-top:6px;transition:all .15s}
+.ai-suggest-btn:hover{background:rgba(232,255,71,.08)}
+.ai-result{margin-top:8px;padding:10px;background:rgba(232,255,71,.04);border:1px solid rgba(232,255,71,.1);border-radius:7px;font-size:11px;color:var(--muted);line-height:1.7;max-height:200px;overflow-y:auto;display:none}
+.ai-result.show{display:block}
+
+/* ── NUTRITION ── */
+.nutri-layout{display:grid;grid-template-columns:1fr 320px;gap:18px}
+.nutri-chat-wrap{display:flex;flex-direction:column}
+.chat-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px;scrollbar-width:thin;min-height:350px;max-height:calc(100vh - 380px)}
+.msg{max-width:85%;padding:9px 13px;border-radius:9px;font-size:12px;line-height:1.65}
+.msg-user{background:rgba(232,255,71,.09);border:1px solid rgba(232,255,71,.18);align-self:flex-end;border-bottom-right-radius:2px}
+.msg-ai{background:var(--s2);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:2px}
+.msg-ai strong{color:var(--accent)}
+.chat-input-wrap{display:flex;gap:7px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.chat-input{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-size:12px;resize:none;min-height:44px;max-height:100px}
+.chat-input:focus{outline:none;border-color:var(--accent)}
+.btn-send{background:var(--accent);border:none;border-radius:7px;padding:9px 16px;font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--bg);flex-shrink:0;align-self:flex-end}
+.btn-send:disabled{opacity:.4;cursor:default}
+.quick-foods{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.qf-btn{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:4px 9px;font-size:10px;color:var(--muted);transition:all .12s}
+.qf-btn:hover{border-color:var(--accent);color:var(--accent)}
+.nutri-side{display:flex;flex-direction:column;gap:10px}
+.nutri-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:13px}
+.nutri-card h3{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.04em;margin-bottom:10px}
+.macro-rings{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
+.macro-ring{background:var(--s2);border-radius:7px;padding:9px 6px;text-align:center}
+.macro-ring-val{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.03em}
+.macro-ring-label{font-size:8px;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.macro-bar{height:3px;border-radius:2px;margin-top:5px;overflow:hidden;background:var(--s3)}
+.macro-fill{height:100%;border-radius:2px;transition:width .5s}
+
+/* ── UTILS ── */
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.04em;margin-bottom:14px}
+.empty-state{text-align:center;padding:32px;color:var(--muted);font-size:12px}
+.empty-state .big{font-size:28px;margin-bottom:6px}
+.section-sep{height:1px;background:var(--border);margin:20px 0}
+
+@media(max-width:1000px){.day-grid{grid-template-columns:repeat(4,1fr)}.nutri-layout{grid-template-columns:1fr}.shop-layout{grid-template-columns:1fr}}
+@media(max-width:700px){.dash-grid{grid-template-columns:repeat(2,1fr)}.dash-row{grid-template-columns:1fr}.day-grid{grid-template-columns:repeat(2,1fr)}.hero,.content{padding:18px 14px}.tabs-wrap{padding:0 10px}}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Coach Complet · Course + Salle + Nutrition + Courses</div>
+  <h1>ROME <span>2026</span></h1>
+  <div class="hero-meta">
+    <div class="meta-pill"><span class="dot" style="background:var(--accent)"></span>Objectif 1h45'00"</div>
+    <div class="meta-pill"><span class="dot" style="background:var(--orange)"></span>18 Oct 2026</div>
+    <div class="meta-pill"><span class="dot" style="background:var(--gym)"></span>Course + Salle + Nutrition IA</div>
+    <div class="meta-pill"><span class="dot" style="background:var(--green)"></span>Suivi complet + Liste de courses</div>
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <button class="tab-btn active" style="--pc:#e8ff47" onclick="switchTab(0)"><span class="pdot" style="background:#e8ff47"></span>Dashboard</button>
+  <button class="tab-btn" style="--pc:var(--p1)" onclick="switchTab(1)"><span class="pdot" style="background:var(--p1)"></span>Planning</button>
+  <button class="tab-btn" style="--pc:var(--gym)" onclick="switchTab(2)"><span class="pdot" style="background:var(--gym)"></span>Suivi Salle</button>
+  <button class="tab-btn" style="--pc:var(--gold)" onclick="switchTab(3)"><span class="pdot" style="background:var(--gold)"></span>Liste de Courses</button>
+  <button class="tab-btn" style="--pc:var(--green)" onclick="switchTab(4)"><span class="pdot" style="background:var(--green)"></span>Nutrition IA</button>
+</div>
+
+<div class="content">
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="panel active" id="panel-0">
+  <div class="dash-grid">
+    <div class="stat-card" style="--sc:var(--accent)">
+      <div class="stat-label">Séances réalisées</div>
+      <div class="stat-val" id="d-done">0</div>
+      <div class="stat-unit">sur <span id="d-total">0</span> planifiées</div>
+    </div>
+    <div class="stat-card" style="--sc:var(--blue)">
+      <div class="stat-label">Phase actuelle</div>
+      <div class="stat-val" style="font-size:20px" id="d-phase">–</div>
+      <div class="stat-unit" id="d-phase-sub"></div>
+    </div>
+    <div class="stat-card" style="--sc:var(--gym)">
+      <div class="stat-label">Poids actuel</div>
+      <div class="stat-val" id="d-weight">60</div>
+      <div class="stat-unit">kg <span id="d-weight-trend"></span></div>
+    </div>
+    <div class="stat-card" style="--sc:var(--green)">
+      <div class="stat-label">Ressenti moyen</div>
+      <div class="stat-val" id="d-rating">–</div>
+      <div class="stat-unit">/ 10 (7 derniers jours)</div>
+    </div>
+  </div>
+  <div class="dash-row">
+    <div class="dash-card">
+      <h3>PROGRESSION</h3>
+      <div class="prog-bars">
+        <div class="prog-row"><div class="prog-label">PHASE 1</div><div class="prog-bar-wrap"><div class="prog-bar" id="pb1" style="width:0%;background:var(--p1)"></div></div><div class="prog-pct" id="pt1">0%</div></div>
+        <div class="prog-row"><div class="prog-label">PHASE 2</div><div class="prog-bar-wrap"><div class="prog-bar" id="pb2" style="width:0%;background:var(--p2)"></div></div><div class="prog-pct" id="pt2">0%</div></div>
+        <div class="prog-row"><div class="prog-label">PHASE 3</div><div class="prog-bar-wrap"><div class="prog-bar" id="pb3" style="width:0%;background:var(--p3)"></div></div><div class="prog-pct" id="pt3">0%</div></div>
+        <div class="prog-row"><div class="prog-label">PHASE 4</div><div class="prog-bar-wrap"><div class="prog-bar" id="pb4" style="width:0%;background:var(--p4)"></div></div><div class="prog-pct" id="pt4">0%</div></div>
+        <div class="prog-row" style="margin-top:4px"><div class="prog-label">TOTAL</div><div class="prog-bar-wrap"><div class="prog-bar" id="pb-total" style="width:0%;background:var(--accent)"></div></div><div class="prog-pct" id="pt-total">0%</div></div>
+      </div>
+    </div>
+    <div class="dash-card">
+      <h3>SÉANCES RÉCENTES</h3>
+      <div id="recent-sessions"><div class="empty-state"><div class="big">🏃‍♀️</div>Aucune séance encore. Lance-toi !</div></div>
+    </div>
+  </div>
+  <div class="ai-tip" id="ai-dash-tip">
+    <div class="ai-tip-header">🤖 Conseil Coach</div>
+    <p id="ai-tip-text">Commence par cocher tes premières séances pour recevoir des conseils personnalisés.</p>
+  </div>
+  <div class="dash-card">
+    <h3>POIDS CORPOREL</h3>
+    <div class="weight-inputs">
+      <div><label class="form-label">NOUVEAU POIDS (KG)</label><input type="number" id="weight-input" class="form-input" placeholder="60.0" step="0.1"></div>
+      <div><label class="form-label">DATE</label><input type="date" id="weight-date" class="form-input"></div>
+    </div>
+    <button class="btn-primary" style="margin-top:4px" onclick="logWeight()">ENREGISTRER</button>
+    <div class="weight-log" id="weight-log"></div>
+  </div>
+</div>
+
+<!-- ═══ PLANNING ═══ -->
+<div class="panel" id="panel-1">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0">PLANNING 24 SEMAINES</div>
+    <div style="display:flex;gap:10px;align-items:center;font-size:10px;color:var(--muted);font-family:'DM Mono',monospace">
+      <span style="color:var(--green)">✓ RÉALISÉE</span>
+      <span style="color:var(--red)">✗ PASSÉE</span>
+      <span>👁 DÉTAIL</span>
+    </div>
+  </div>
+  <div id="planning-container"></div>
+</div>
+
+<!-- ═══ SUIVI SALLE ═══ -->
+<div class="panel" id="panel-2">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+    <div class="section-title" style="margin:0">SUIVI SÉANCES SALLE</div>
+    <button class="btn-primary" style="width:auto;padding:8px 18px;font-size:12px" onclick="openGymLogger()">+ NOUVELLE SÉANCE</button>
+  </div>
+  <div class="dash-card" style="margin-bottom:16px">
+    <h3>ÉVOLUTION DES CHARGES</h3>
+    <div id="perf-chart" class="perf-chart"><div class="empty-state"><div class="big">💪</div>Enregistre des séances pour voir l'évolution.</div></div>
+  </div>
+  <div class="section-title" style="font-size:16px">HISTORIQUE</div>
+  <div id="gym-history"><div class="empty-state"><div class="big">🏋️‍♀️</div>Aucune séance. Clique sur "+ Nouvelle séance".</div></div>
+</div>
+
+<!-- ═══ LISTE DE COURSES ═══ -->
+<div class="panel" id="panel-3">
+  <div class="shop-layout">
+    <div class="shop-main" id="shop-main"></div>
+    <div class="shop-sidebar">
+      <div class="shop-side-card">
+        <h3>📊 RÉSUMÉ</h3>
+        <div class="shop-stat"><span>Total articles</span><span class="shop-stat-val" id="shop-total">0</span></div>
+        <div class="shop-stat"><span>Articles cochés</span><span class="shop-stat-val" id="shop-done">0</span></div>
+        <div class="shop-stat"><span>Restants</span><span class="shop-stat-val" id="shop-left">0</span></div>
+        <button onclick="clearChecked()" style="background:var(--s2);border:1px solid var(--border);color:var(--muted);font-size:10px;padding:6px;border-radius:5px;width:100%;margin-top:8px">🗑 Supprimer les cochés</button>
+        <button onclick="clearAll()" style="background:var(--s2);border:1px solid rgba(248,113,113,.2);color:var(--red);font-size:10px;padding:6px;border-radius:5px;width:100%;margin-top:4px">🗑 Vider la liste</button>
+      </div>
+      <div class="shop-side-card">
+        <h3>🤖 SUGGESTIONS IA</h3>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.6">Génère une liste de courses adaptée à ta phase d'entraînement.</p>
+        <button class="ai-suggest-btn" onclick="getAiSuggestions('sport')">🏃 Pour l'entraînement</button>
+        <button class="ai-suggest-btn" onclick="getAiSuggestions('semaine')">📅 Liste semaine complète</button>
+        <button class="ai-suggest-btn" onclick="getAiSuggestions('avant-course')">🇮🇹 Avant Rome</button>
+        <div class="ai-result" id="ai-shop-result"></div>
+      </div>
+      <div class="shop-side-card">
+        <h3>⭐ ESSENTIELS SPORTIFS</h3>
+        <div id="quick-add-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NUTRITION ═══ -->
+<div class="panel" id="panel-4">
+  <div class="nutri-layout">
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="section-title" style="margin:0">COACH NUTRITION IA</div>
+        <button onclick="clearChat()" style="background:var(--s2);border:1px solid var(--border);color:var(--muted);font-size:10px;padding:5px 10px;border-radius:5px">Effacer</button>
+      </div>
+      <div class="quick-foods">
+        <button class="qf-btn" onclick="quickMsg('Analyse mes macros pour aujourd\'hui')">📊 Macros du jour</button>
+        <button class="qf-btn" onclick="quickMsg('Que manger avant une sortie longue demain ?')">🏃 Avant longue</button>
+        <button class="qf-btn" onclick="quickMsg('Que manger après une séance de salle ?')">💪 Après salle</button>
+        <button class="qf-btn" onclick="quickMsg('Donne-moi un plan alimentaire complet pour la semaine')">📅 Plan semaine</button>
+        <button class="qf-btn" onclick="quickMsg('Recettes riches en glucides simples pour coureurs')">🍝 Recettes glucides</button>
+        <button class="qf-btn" onclick="quickMsg('Comment charger en glucides la veille d\'un semi-marathon ?')">🇮🇹 Avant Rome</button>
+      </div>
+      <div class="nutri-chat-wrap">
+        <div class="chat-messages" id="chat-messages">
+          <div class="msg msg-ai"><strong>Coach Nutrition IA 🥗</strong><br><br>Bonjour ! Je suis ton coach nutrition pour la préparation du Semi de Rome.<br><br>Profil : <strong>27 ans · 60 kg · 168 cm · Femme</strong><br>Objectif : <strong>Semi-marathon 1h45 · 18 octobre 2026</strong><br><br>Dis-moi ce que tu as mangé, ou pose-moi n'importe quelle question sur ton alimentation. Je m'adapte à ta phase d'entraînement et à ton poids actuel.</div>
+        </div>
+        <div class="chat-input-wrap">
+          <textarea class="chat-input" id="chat-input" placeholder="Ex: J'ai mangé des flocons d'avoine au petit déj, poulet riz à midi..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"></textarea>
+          <button class="btn-send" id="btn-send" onclick="sendMsg()">→</button>
+        </div>
+      </div>
+    </div>
+    <div class="nutri-side">
+      <div class="nutri-card">
+        <h3>POIDS & IMC</h3>
+        <div style="display:flex;align-items:baseline;gap:7px;margin-bottom:6px">
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--accent)" id="n-weight">60.0</span>
+          <span style="color:var(--muted);font-size:12px">kg</span>
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:8px">IMC : <strong style="color:var(--text)" id="n-imc">21.3</strong></div>
+        <input type="number" id="nutri-weight" class="form-input" placeholder="Mettre à jour le poids" step="0.1">
+        <button onclick="updateNutriWeight()" style="background:var(--s2);border:1px solid var(--border);color:var(--text);font-size:10px;padding:5px;border-radius:5px;margin-top:5px;width:100%">Mettre à jour</button>
+      </div>
+      <div class="nutri-card">
+        <h3>OBJECTIFS MACROS</h3>
+        <div id="macro-phase-label" style="font-size:9px;color:var(--muted);margin-bottom:8px;font-family:'DM Mono',monospace"></div>
+        <div class="macro-rings">
+          <div class="macro-ring"><div class="macro-ring-val" style="color:var(--orange)" id="m-g">–</div><div class="macro-ring-label">Glucides</div><div class="macro-bar"><div class="macro-fill" id="mb-g" style="background:var(--orange);width:60%"></div></div></div>
+          <div class="macro-ring"><div class="macro-ring-val" style="color:var(--blue)" id="m-p">–</div><div class="macro-ring-label">Protéines</div><div class="macro-bar"><div class="macro-fill" id="mb-p" style="background:var(--blue);width:20%"></div></div></div>
+          <div class="macro-ring"><div class="macro-ring-val" style="color:var(--green)" id="m-l">–</div><div class="macro-ring-label">Lipides</div><div class="macro-bar"><div class="macro-fill" id="mb-l" style="background:var(--green);width:20%"></div></div></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted)">Calories : <strong style="color:var(--accent)" id="m-kcal">–</strong> kcal/jour</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end content -->
+
+<!-- ═══ MODAL ═══ -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-inner">
+        <div><div class="modal-title" id="m-title">SÉANCE</div><div class="modal-sub" id="m-sub"></div></div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="m-body"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// DATA — SESSION DETAILS
+// ══════════════════════════════════════════════════════════
+const RUN_DETAILS = {
+  // Phase 1
+  footing_reprise:{name:"Footing de Reprise",dur:"38 MIN",color:"var(--p1)",drills:[["🔆","Marche active + mobilité hanches et chevilles","8 min","a-muted"],["🏃","10 min footing allure fondamentale","Fond","a-fond"],["⬆️","5 min accélération progressive douce","5'45\"","a-blue"],["🏃","10 min retour allure fondamentale","Fond","a-fond"],["🔅","5 min marche + étirements mollets/ischio","Calme","a-muted"]],tip:"💡 Test simple : pouvoir tenir une conversation = bonne allure fondamentale.",tipCls:"tip-b"},
+  intervalles_doux:{name:"Intervalles Doux",dur:"40 MIN",color:"var(--p1)",drills:[["🔆","8 min footing très lent","Échauff.","a-muted"],["🔁","3 × (6 min fond / 2 min semi-vive) — enchaîné","Alt.","a-blue"],["🔅","8 min retour calme + étirements","Calme","a-muted"]],tip:"💡 La phase semi-vive doit être perceptible mais confortable.",tipCls:"tip-b"},
+  cotes_courtes:{name:"Côtes Courtes",dur:"42 MIN",color:"var(--orange)",drills:[["🔆","12 min footing plat","Fond","a-muted"],["⬆️","5 × montée 80-150m effort 7/10 / descente trot lent","Effort","a-orange"],["🏃","10 min récup fondamental","Fond","a-fond"],["🔅","8 min étirements quadriceps + mollets","Calme","a-muted"]],tip:"💡 Corps légèrement incliné en avant, foulée courte, bras actifs. Jamais en sprint.",tipCls:"tip-o"},
+  fartlek_libre:{name:"Fartlek Libre",dur:"38 MIN",color:"var(--p1)",drills:[["🔆","8 min échauffement très lent","Léger","a-muted"],["🎲","25 min fartlek : accélérations spontanées 30sec–2min quand tu le sens","Libre","a-blue"],["🔅","5 min retour calme","Calme","a-muted"]],tip:"💡 Semaine de relâche = pas de structure imposée. Écoute ton corps.",tipCls:"tip-y"},
+  trail_60:{name:"Trail Découverte",dur:"1H00",color:"var(--green)",drills:[["🌿","60 min trail effort tranquille — marche dans les montées raides","Trail","a-green"]],tip:"💡 Terrain irrégulier = proprioception et renforcement cheville.",tipCls:"tip-g"},
+  cotes_longues:{name:"Côtes Longues",dur:"45 MIN",color:"var(--orange)",drills:[["🔆","12 min footing plat","Fond","a-muted"],["⬆️","6 × montée 200-300m effort 8/10 / descente trot","8/10","a-orange"],["🔅","10 min récup + étirements","Calme","a-muted"]]},
+  sortie_progressive:{name:"Sortie Longue Progressive",dur:"1H15",color:"var(--green)",drills:[["🏃","30 min allure fondamentale","6'20\"","a-fond"],["🏃","30 min légèrement plus rapide","5'50\"","a-blue"],["⬆️","10 min accélération finale contrôlée","5'30\"","a-blue"],["🔅","5 min marche","Walk","a-muted"]],tip:"💡 Commencer lentement et finir plus vite = meilleure économie de course.",tipCls:"tip-g"},
+  blocs_tempo:{name:"Blocs Tempo",dur:"48 MIN",color:"var(--p1)",drills:[["🔆","10 min footing lent","Fond","a-muted"],["🔁","4 × (5 min fond / 3 min à 5'30\"/km)","Alt.","a-blue"],["🔅","6 min retour calme","Calme","a-muted"]]},
+  long_cible:{name:"Long + 1ère Touche Allure Cible",dur:"1H15",color:"var(--green)",drills:[["🏃","55 min fondamental","6'10\"","a-fond"],["🎯","10 min allure cible","5'00\"","a-yellow"],["🔅","5 min marche","Calme","a-muted"]],tip:"💡 Grave la sensation de 5'00\"/km — c'est la mémoire musculaire de Rome.",tipCls:"tip-y"},
+  footing_strides:{name:"Footing + Strides",dur:"50 MIN",color:"var(--p1)",drills:[["🏃","30 min fondamental","6'10\"","a-fond"],["⚡","5 × 20 sec strides vifs / 40 sec marche entre chaque","Vif","a-orange"],["🔅","5 min calme","Calme","a-muted"]],tip:"💡 Strides = accélérations ultra-courtes qui améliorent la technique sans fatiguer.",tipCls:"tip-y"},
+  trail_denivele:{name:"Trail avec Dénivelé",dur:"1H25",color:"var(--green)",drills:[["🌿","1h15 trail effort ~6/10, marche si trop pentu","Trail","a-green"],["🔅","10 min marche + étirements","Calme","a-muted"]]},
+  test_5k:{name:"⚡ TEST 5 km — Bilan Phase 1",dur:"~38 MIN",color:"var(--gold)",drills:[["🔆","15 min échauffement progressif + 3 strides","Échauff.","a-muted"],["🏁","5 km effort MAXIMAL contrôlé — note le temps","MAX","a-orange"],["🔅","10 min trot léger récupération","Récup.","a-muted"]],tip:"💡 Objectif : améliorer ton 28'36\". Note ton chrono km par km.",tipCls:"tip-o"},
+  footing_leger:{name:"Footing Léger",dur:"40 MIN",color:"var(--p1)",drills:[["🏃","25 min fondamental","Fond","a-fond"],["⚡","4 × 30 sec accélérations progressives / 1 min marche","Vif","a-blue"],["🔅","8 min calme","Calme","a-muted"]]},
+  long_50:{name:"Sortie Longue",dur:"50 MIN",color:"var(--green)",drills:[["🔆","5 min marche","Échauff.","a-muted"],["🏃","45 min footing fondamental continu","6'10-6'30\"","a-fond"],["🔅","5 min marche + étirements","Calme","a-muted"]]},
+  long_55:{name:"Sortie Longue — Terrain Varié",dur:"55 MIN",color:"var(--green)",drills:[["🏃","45 min footing fond, terrain varié si possible","Fond","a-fond"],["⚡","3 × 30 sec accélérations en fin","Vif","a-blue"],["🔅","5 min marche","Calme","a-muted"]]},
+  long_65:{name:"Sortie Longue +",dur:"1H05",color:"var(--green)",drills:[["🏃","50 min fondamental","6'10\"","a-fond"],["⬆️","5 min accélération progressive en fin","5'30\"","a-blue"],["🔅","5 min marche","Calme","a-muted"]]},
+  // Phase 2
+  vma_6x2:{name:"⚡ VMA 6×2 min",dur:"45 MIN",color:"var(--p2)",drills:[["🔆","12 min échauffement + 2 strides","Échauff.","a-muted"],["⚡","6 × 2 min à VMA / 2 min trot récup","4'30-4'40\"","a-orange"],["🔅","8 min retour calme","Calme","a-muted"]],tip:"💡 VMA = essoufflée en fin de répétition, pas en apnée. Récup trot obligatoire.",tipCls:"tip-o"},
+  recup_35:{name:"Récupération Active",dur:"35 MIN",color:"var(--teal)",drills:[["🏃","30 min footing très lent relâché — jambes légères","6'45\"","a-fond"],["🧘","5 min étirements doux mollets, ischio, fléchisseurs","Étir.","a-muted"]],tip:"💡 DOIT être facile. Jambes lourdes du mardi ? Réduis à 20 min ou marche.",tipCls:"tip-g"},
+  long_cible2:{name:"Long + Bloc Allure Cible",dur:"1H25",color:"var(--green)",drills:[["🏃","55 min fondamental","6'10\"","a-fond"],["🎯","20 min allure cible","5'00\"","a-yellow"],["🔅","5 min marche","Walk","a-muted"]]},
+  vma_8x2:{name:"⚡ VMA 8×2 min",dur:"48 MIN",color:"var(--p2)",drills:[["🔆","12 min + 3 strides","Échauff.","a-muted"],["⚡","8 × 2 min à 4'30\"/km / 90 sec trot","4'30\"","a-orange"],["🔅","10 min calme","Calme","a-muted"]]},
+  recup_strides:{name:"Footing + Strides Doux",dur:"38 MIN",color:"var(--teal)",drills:[["🏃","25 min récup lent","6'45\"","a-fond"],["⚡","4 × 15 sec accélérations légères / 1 min marche","Léger","a-blue"],["🔅","7 min étirements","Étir.","a-muted"]]},
+  cotes_long_run:{name:"Côtes Longues + Footing",dur:"1H10",color:"var(--orange)",drills:[["🔆","15 min footing","Fond","a-muted"],["⬆️","8 × côtes 200m effort 8/10 / trot descente","8/10","a-orange"],["🏃","20 min fondamental","Fond","a-fond"],["🔅","Étirements complets","Calme","a-muted"]]},
+  vma_3min:{name:"⚡ Répétitions 3 minutes",dur:"50 MIN",color:"var(--p2)",drills:[["🔆","12 min + éducatifs (talons-fesses, genoux)","Échauff.","a-muted"],["⚡","6 × 3 min à 4'40\"/km / 2 min trot","4'40\"","a-orange"],["🔅","10 min calme","Calme","a-muted"]]},
+  recup_trail:{name:"Trail Récupération",dur:"40 MIN",color:"var(--teal)",drills:[["🌿","35-40 min trail très lent effort 5/10","Trail doux","a-green"]],tip:"💡 Terrain mou = absorbe les chocs. Ménage les articulations.",tipCls:"tip-g"},
+  double_bloc:{name:"Long Double Bloc Allure",dur:"1H35",color:"var(--green)",drills:[["🏃","45 min fondamental","6'10\"","a-fond"],["🎯","15 min allure cible","5'00\"","a-yellow"],["🏃","10 min trot récup","Trot","a-fond"],["🎯","15 min allure cible — maintien même fatiguée","5'00\"","a-yellow"],["🔅","5 min marche","Walk","a-muted"]],tip:"💡 Double bloc = simulation fin de course. Régulière sur le 2ème bloc.",tipCls:"tip-y"},
+  fartlek_struct:{name:"Fartlek Structuré",dur:"42 MIN",color:"var(--p1)",drills:[["🔆","10 min footing","Fond","a-fond"],["🎲","25 min : 2 min vif / 3 min fond à ton gré","Libre","a-blue"],["🔅","7 min calme","Calme","a-muted"]]},
+  marche_active:{name:"Marche Active",dur:"30 MIN",color:"var(--teal)",drills:[["🚶","30 min marche rapide ou footing ultra-lent","Léger","a-muted"]]},
+  trail_plaisir:{name:"Trail Plaisir",dur:"1H15",color:"var(--green)",drills:[["🌿","1h15 trail tranquille 6/10, profite du paysage","Plaisir","a-green"]]},
+  seuil_1:{name:"🔴 Premier Travail au Seuil",dur:"52 MIN",color:"var(--pink)",drills:[["🔆","12 min + 2 strides","Échauff.","a-muted"],["🔴","4 × 6 min au seuil / 2 min trot","4'45-4'50\"","a-pink"],["🔅","10 min calme","Calme","a-muted"]],tip:"💡 Seuil = 2-3 mots possibles, pas de vraie conversation. Trop facile : trop lent.",tipCls:"tip-p"},
+  recup_tech:{name:"Récup + Technique",dur:"38 MIN",color:"var(--teal)",drills:[["🏃","20 min très lent","6'45\"","a-fond"],["🦵","Éducatifs : talons-fesses, montées genoux, pas chassés — 3×30m chaque","Technique","a-blue"],["🔅","8 min étirements mollets","Calme","a-muted"]]},
+  seuil_2:{name:"🔴 Seuil Progressif 3×8 min",dur:"55 MIN",color:"var(--pink)",drills:[["🔆","12 min","Échauff.","a-muted"],["🔴","3 × 8 min au seuil / 2 min trot","4'45\"","a-pink"],["🔅","10 min calme","Calme","a-muted"]]},
+  cotes_sprint:{name:"Côtes Sprint + Long Fondamental",dur:"1H20",color:"var(--orange)",drills:[["🔆","15 min","Fond","a-muted"],["⬆️","10 × côtes 100m sprint vif / descente marche","Sprint","a-orange"],["🏃","35 min fondamental terrain varié","Fond","a-fond"],["🔅","10 min calme","Calme","a-muted"]]},
+  seuil_long:{name:"🔴 Seuil Long 20 min Continu",dur:"55 MIN",color:"var(--pink)",drills:[["🔆","12 min + éducatifs","Échauff.","a-muted"],["🔴","20 min CONTINU au seuil — ne t'arrête pas","4'50\"","a-pink"],["🏃","3 min trot récup","Trot","a-fond"],["🔴","10 min au seuil pour finir fort","4'50\"","a-pink"],["🔅","10 min calme","Calme","a-muted"]],tip:"💡 20 min continu au seuil = vrai défi. Si tu dois légèrement ralentir en fin → ok.",tipCls:"tip-p"},
+  trail_deport:{name:"Trail Intensif — Dénivelé",dur:"1H45",color:"var(--green)",drills:[["🌿","1h30 trail modéré 250-400m D+, marche rapide en montée","Trail","a-green"],["🔅","15 min marche récup + étirements","Calme","a-muted"]]},
+  footing_strides2:{name:"Footing + Strides",dur:"40 MIN",color:"var(--p1)",drills:[["🏃","28 min fondamental","Fond","a-fond"],["⚡","5 × 20 sec strides vifs / 40 sec marche","Vif","a-orange"],["🔅","5 min calme","Calme","a-muted"]]},
+  recup_lent:{name:"Récup Ultra-Lent",dur:"30 MIN",color:"var(--teal)",drills:[["🏃","30 min très lent — préparer les jambes pour le test","Très lent","a-muted"]]},
+  test_10k:{name:"⚡ TEST 10 km — Bilan Phase 2",dur:"~60 MIN",color:"var(--gold)",drills:[["🔆","15 min + 3 strides + mobilité","Échauff.","a-muted"],["🏁","10 km effort MAXIMAL contrôlé — note chrono km/km","MAX","a-orange"],["🔅","10 min trot léger","Récup.","a-muted"]],tip:"💡 Objectif : ~55 min (5'30\"/km). Si tu valides ça → 1h45 au semi est réaliste.",tipCls:"tip-o"},
+  // Phase 3
+  allure_3x15:{name:"🎯 3 × 15 min Allure Cible",dur:"55 MIN",color:"var(--p3)",drills:[["🔆","12 min + 2 strides","Échauff.","a-muted"],["🎯","3 × 15 min à 5'00\"/km / 3 min trot récup","5'00\"","a-yellow"],["🔅","8 min calme","Calme","a-muted"]],tip:"💡 45 min totales à allure semi = plus de la moitié de la course ! Focus régularité.",tipCls:"tip-o"},
+  soutien_allure:{name:"Soutien Allure — Rappels Courts",dur:"42 MIN",color:"var(--teal)",drills:[["🏃","20 min fond relâché","6'15\"","a-fond"],["🎯","3 × 3 min à 5'00\"/km / 2 min récup","5'00\"","a-yellow"],["🔅","7 min calme","Calme","a-muted"]],tip:"💡 Ancre la sensation de 5'00\"/km dans la mémoire musculaire.",tipCls:"tip-g"},
+  long_max:{name:"Sortie Longue Max — 1h50",dur:"1H50",color:"var(--green)",drills:[["🏃","50 min fondamental","6'10\"","a-fond"],["🎯","40 min allure cible en continu","5'00\"","a-yellow"],["🔅","10 min marche","Walk","a-muted"]],tip:"💡 Sortie longue maximale du programme. 40 min à 5'00\" = vraie préparation.",tipCls:"tip-g"},
+  combo_seuil:{name:"🔴 Seuil + Allure Cible Combo",dur:"55 MIN",color:"var(--pink)",drills:[["🔆","12 min","Fond","a-muted"],["🔴","2 × 8 min seuil / 2 min trot","4'48\"","a-pink"],["🎯","2 × 8 min allure cible / 2 min trot","5'00\"","a-yellow"],["🔅","8 min calme","Calme","a-muted"]]},
+  trail_recup:{name:"Trail Récupération Court",dur:"40 MIN",color:"var(--teal)",drills:[["🌿","35-40 min trail très lent terrain doux","Trail doux","a-green"]],tip:"💡 Trail récup = ménager les articulations entre séances dures.",tipCls:"tip-g"},
+  long_sim:{name:"Longue Simulation Fin de Course",dur:"1H45",color:"var(--green)",drills:[["🏃","45 min fondamental","6'10\"","a-fond"],["🎯","50 min allure cible — régulière, ne laisse pas décroître","5'00\"","a-yellow"],["🔅","10 min marche","Walk","a-muted"]]},
+  allure_2x25:{name:"🎯 2 × 25 min Allure Cible",dur:"1H05",color:"var(--p3)",drills:[["🔆","12 min + strides","Échauff.","a-muted"],["🎯","25 min à 5'00\"/km","5'00\"","a-yellow"],["🏃","4 min trot récup","Trot","a-fond"],["🎯","25 min à 5'00\" — tiens même si dur","5'00\"","a-yellow"],["🔅","8 min calme","Calme","a-muted"]],tip:"💡 50 min totales à allure semi. Mental : découpe le 2ème bloc en 5×5 min.",tipCls:"tip-o"},
+  rappels_allure:{name:"Footing Rythmé — Rappels Allure",dur:"40 MIN",color:"var(--teal)",drills:[["🏃","22 min fond","6'15\"","a-fond"],["🎯","4 × 2 min à 5'00\" / 90 sec récup footing","5'00\"","a-yellow"],["🔅","6 min calme","Calme","a-muted"]]},
+  cotes_long2:{name:"Côtes Moyennes + Long Fondamental",dur:"1H30",color:"var(--orange)",drills:[["🔆","15 min","Fond","a-muted"],["⬆️","6 × côtes 150-200m effort 8/10","8/10","a-orange"],["🏃","40 min footing fondamental","Fond","a-fond"],["🔅","10 min calme","Calme","a-muted"]]},
+  footing_relache:{name:"Footing Doux + Accélérations",dur:"40 MIN",color:"var(--p1)",drills:[["🏃","28 min très lent relâché","Lent","a-fond"],["⚡","4 × 30 sec accél progressives / 1 min marche","Vif","a-blue"],["🔅","5 min calme","Calme","a-muted"]],tip:"💡 Semaine de relâche obligatoire — ne triche pas dessus.",tipCls:"tip-y"},
+  mobilite:{name:"Mobilité + Marche",dur:"30 MIN",color:"var(--teal)",drills:[["🚶","20 min marche rapide ou footing ultra-lent","Léger","a-muted"],["🧘","10 min yoga / mobilité complète","Mobilité","a-muted"]]},
+  allure_40min:{name:"🎯 40 min Continu Allure Cible",dur:"1H00",color:"var(--p3)",drills:[["🔆","12 min progressif","Échauff.","a-muted"],["🎯","40 min CONTINU à 5'00\"/km — pas d'arrêt","5'00\"","a-yellow"],["🔅","8 min calme","Calme","a-muted"]],tip:"💡 La séance reine. 40 min non-stop à allure semi = si tu tiens ça, tu tiens Rome.",tipCls:"tip-o"},
+  recup_test:{name:"Récup Pré-Test",dur:"30 MIN",color:"var(--teal)",drills:[["🏃","30 min ultra-lent — préparer les jambes","Très lent","a-muted"]]},
+  test_10k_allure:{name:"⚡ Test 10 km — Allure Cible",dur:"~55 MIN",color:"var(--gold)",drills:[["🔆","15 min + 3 strides","Échauff.","a-muted"],["🏁","10 km en 50 min — régularité absolue km par km","5'00\"","a-yellow"],["🔅","10 min trot","Récup.","a-muted"]],tip:"💡 Si tu passes 10 km en 50 min → tu es prête pour 1h45.",tipCls:"tip-o"},
+  verif_30:{name:"🎯 Vérification Allure 30 min",dur:"55 MIN",color:"var(--p3)",drills:[["🔆","12 min","Fond","a-muted"],["🎯","30 min à 5'00\"/km — séance de confiance","5'00\"","a-yellow"],["⚡","3 × 30 sec à 4'30\" en fin","Vif","a-orange"],["🔅","8 min calme","Calme","a-muted"]]},
+  last_trail:{name:"Last Trail — Dernier Trail du Programme",dur:"35 MIN",color:"var(--teal)",drills:[["🌿","30-35 min trail très lent","Trail doux","a-green"]],tip:"💡 Dernier trail. Affûtage commence après cette séance.",tipCls:"tip-g"},
+  long_final:{name:"Sortie Longue Finale",dur:"1H20",color:"var(--green)",drills:[["🏃","40 min fondamental","6'10\"","a-fond"],["🎯","30 min allure cible","5'00\"","a-yellow"],["🔅","10 min marche","Walk","a-muted"]],tip:"💡 Dernière vraie sortie longue. L'affûtage commence.",tipCls:"tip-y"},
+  // Phase 4
+  p4_frac:{name:"Fractionné Allégé + Touche Allure",dur:"45 MIN",color:"var(--p4)",drills:[["🔆","12 min","Fond","a-muted"],["⚡","4 × 3 min ~4'55\" / 2 min trot","4'55\"","a-yellow"],["🔅","10 min calme","Calme","a-muted"]],tip:"💡 Volume /2. But : rappeler qu'on sait courir vite. Pas se fatiguer.",tipCls:"tip-v"},
+  p4_touch:{name:"Footing + Touche Allure",dur:"55 MIN",color:"var(--p4)",drills:[["🏃","40 min fondamental agréable","Fond","a-fond"],["🎯","10 min allure cible — sentir les jambes","5'00\"","a-yellow"],["🔅","5 min marche","Walk","a-muted"]]},
+  p4_leger:{name:"Footing Léger",dur:"35 MIN",color:"var(--p4)",drills:[["🏃","22 min très lent confortable","Très lent","a-muted"],["⚡","4 × 30 sec accélérations vives / 1 min marche","Vif","a-orange"],["🔅","5 min calme","Calme","a-muted"]]},
+  p4_activ:{name:"Activation Finale",dur:"25 MIN",color:"var(--p4)",drills:[["🏃","15 min très lent","Lent","a-muted"],["🎯","2 × 3 min allure cible — rappel musculaire","5'00\"","a-yellow"],["🔅","4 min marche","Walk","a-muted"]],tip:"💡 Après cette séance : ZÉRO course vendredi. Glucides vendredi-samedi. Couche-toi tôt.",tipCls:"tip-v"},
+  p4_j2:{name:"Activation Ultra-Douce — J-2",dur:"15 MIN",color:"var(--p4)",drills:[["🚶","10 min jogging très lent (allure de promenade)","Lent++","a-muted"],["⚡","3 × 20 sec légères accélérations","Léger","a-blue"],["🧘","5 min étirements doux + mobilité","Mobilité","a-muted"]],tip:"💡 J-1 (17 Oct) : ZÉRO course. Marche touristique à Rome. Pasta. Couche-toi tôt.",tipCls:"tip-v"},
+};
+
+const GYM_DETAILS = {
+  s1:{name:"Séance 1 — Lower Body + Core",color:"var(--gym)",exs:[
+    {name:"Vélo / Elliptique",desc:"Échauffement cardio",sets:3,reps:"10 min",tip:"Intensité légère — mise en température"},
+    {name:"Fentes marchées",desc:"Quadriceps, fessiers, ischio",sets:3,reps:"10/10",tip:"Dos droit, genou avant aligné"},
+    {name:"Gainage Planche",desc:"Core, transverse",sets:3,reps:"45\"",tip:"Corps aligné de la tête aux talons"},
+    {name:"Presse à cuisses",desc:"Quadriceps, fessiers",sets:3,reps:"10",tip:"Descendre jusqu'à 90° minimum"},
+    {name:"Russian Twist",desc:"Obliques, abdos",sets:3,reps:"12/12",tip:"Contrôle le mouvement, ne balance pas"},
+    {name:"SDT Roumain",desc:"Ischios, fessiers, bas du dos",sets:3,reps:"10",tip:"⚠️ Jamais la veille d'une séance VMA/Seuil"},
+    {name:"Mollets debout",desc:"Mollets, soléaire",sets:3,reps:"15",tip:"Amplitude complète, pause en haut"},
+    {name:"Leg Curl / Leg Ext.",desc:"Ischios / Quadriceps",sets:3,reps:"12",tip:"Mouvement contrôlé, pas de balancement"},
+  ]},
+  s2:{name:"Séance 2 — Dos + Fessiers ★ PRIORITAIRE",color:"var(--gym)",exs:[
+    {name:"Rameur",desc:"Échauffement + cardio",sets:1,reps:"10 min",tip:"Dos droit, tirer avec les coudes"},
+    {name:"Hip Thrust",desc:"Fessiers = moteur de course",sets:3,reps:"12",tip:"★ Séance prioritaire. Barre sur les hanches, serrer les fessiers en haut"},
+    {name:"Abdos Chandelles",desc:"Abdos, lombaires",sets:3,reps:"10",tip:"Contrôlé à la descente"},
+    {name:"Kick Back",desc:"Fessiers, ischios",sets:3,reps:"15/15",tip:"Ne pas cambrer excessivement"},
+    {name:"Spiderman Plank",desc:"Core, obliques, hanches",sets:3,reps:"10/10",tip:"Genou vient toucher le coude"},
+    {name:"Abducteur / Adducteur",desc:"Hanches, prévention genou",sets:3,reps:"15",tip:"Prévention blessures genou en course"},
+    {name:"Tirage Barre Penchée",desc:"Dos large, rhomboïdes",sets:3,reps:"10",tip:"Barre vers le nombril, coudes serrés"},
+    {name:"Tractions assistées",desc:"Dos, biceps",sets:3,reps:"8",tip:"Amplitude complète, pas de balancement"},
+    {name:"Tirage Menton",desc:"Trapèzes, épaules",sets:3,reps:"12",tip:"Coudes larges, monter jusqu'au menton"},
+  ]},
+  s3:{name:"Séance 3 — Upper Body + Core",color:"var(--gym)",exs:[
+    {name:"Vélo Elliptique",desc:"Échauffement cardio",sets:1,reps:"10 min",tip:"Résistance légère"},
+    {name:"Goblet Squat",desc:"Quadriceps, fessiers, core",sets:3,reps:"12",tip:"Haltère contre la poitrine, dos droit"},
+    {name:"Plank Pass Through",desc:"Core, épaules, stabilité",sets:3,reps:"10/10",tip:"Bassin stable, ne pas déhancher"},
+    {name:"Fentes Bulgares",desc:"Quadriceps, fessiers",sets:3,reps:"10/10",tip:"⚠️ Ne pas faire la veille d'une séance de côtes"},
+    {name:"Sit Ups",desc:"Abdos",sets:3,reps:"15",tip:"Expirer en montant"},
+    {name:"Chaise",desc:"Quadriceps, isométrique",sets:3,reps:"45\"",tip:"90° aux genoux, dos plaqué au mur"},
+    {name:"Shoulder Press",desc:"Épaules, triceps",sets:3,reps:"12",tip:"Coudes à 90° en bas, pousser vers le haut"},
+    {name:"Pompes (genoux)",desc:"Pectoraux, triceps, épaules",sets:3,reps:"12",tip:"Corps aligné, descendre jusqu'au sol"},
+    {name:"Triceps Press",desc:"Triceps",sets:3,reps:"12",tip:"Coudes fixés, mouvement du seul avant-bras"},
+  ]},
+  s3lite:{name:"Séance 3 ↘ — Upper Allégé (sans Fentes)",color:"var(--gym)",exs:[
+    {name:"Vélo Elliptique",desc:"Échauffement cardio",sets:1,reps:"10 min",tip:"Résistance légère"},
+    {name:"Plank Pass Through",desc:"Core, épaules",sets:3,reps:"10/10",tip:"Bassin stable"},
+    {name:"Sit Ups",desc:"Abdos",sets:3,reps:"12",tip:"Version allégée"},
+    {name:"Chaise",desc:"Quadriceps iso.",sets:2,reps:"40\"",tip:"Version courte"},
+    {name:"Shoulder Press",desc:"Épaules",sets:3,reps:"10",tip:"Charges réduites"},
+    {name:"Pompes (genoux)",desc:"Pectoraux",sets:3,reps:"10",tip:"Rythme contrôlé"},
+    {name:"Triceps Press",desc:"Triceps",sets:3,reps:"10",tip:"Charges légères"},
+  ]},
+  s1lite:{name:"Séance 1 ↘ — Lower Body -15% charges",color:"var(--gym)",exs:[
+    {name:"Vélo",desc:"Échauffement",sets:1,reps:"8 min",tip:"Léger"},
+    {name:"Fentes marchées",desc:"Volume réduit",sets:3,reps:"8/8",tip:"Charges -15%"},
+    {name:"Presse à cuisses",desc:"Volume réduit",sets:3,reps:"8",tip:"Charges -15%"},
+    {name:"SDT Roumain",desc:"Volume réduit",sets:3,reps:"8",tip:"⚠️ Charges -15% obligatoire"},
+    {name:"Mollets debout",desc:"Normal",sets:3,reps:"12",tip:"Amplitude complète"},
+    {name:"Leg Curl / Leg Ext.",desc:"Volume réduit",sets:3,reps:"10",tip:"Charges légères"},
+  ]},
+  s2light:{name:"Séance 2 ↘↘ — Affûtage",color:"var(--gym)",exs:[
+    {name:"Rameur",desc:"Échauffement",sets:1,reps:"8 min",tip:"Léger"},
+    {name:"Hip Thrust",desc:"Fessiers",sets:3,reps:"10",tip:"Charges -20%"},
+    {name:"Kick Back",desc:"Fessiers",sets:2,reps:"12",tip:"Amplitude complète"},
+    {name:"Abducteur/Adducteur",desc:"Hanches",sets:2,reps:"12",tip:"Charges légères"},
+    {name:"Tirage Barre Penchée",desc:"Dos",sets:3,reps:"8",tip:"Charges -20%"},
+    {name:"Tractions assistées",desc:"Dos",sets:2,reps:"6",tip:"Pas d'échec musculaire"},
+  ]},
+  upper:{name:"Séance Upper ↘↘ — Affûtage Final",color:"var(--gym)",exs:[
+    {name:"Shoulder Press",desc:"Épaules",sets:2,reps:"10",tip:"Charges très légères"},
+    {name:"Tractions assistées",desc:"Dos",sets:2,reps:"6",tip:"Pas d'échec"},
+    {name:"Pompes (genoux)",desc:"Pectoraux",sets:2,reps:"10",tip:"Léger"},
+    {name:"Triceps Press",desc:"Triceps",sets:2,reps:"10",tip:"Amplitude complète"},
+  ]},
+};
+
+// ══════════════════════════════════════════════════════════
+// PROGRAMME WEEKS
+// ══════════════════════════════════════════════════════════
+const PHASES = [
+  {id:"p1",label:"Phase 1 · Fondation",color:"var(--p1)",weeks:[
+    {num:"S01",title:"Prise de repères",date:"28 Avr – 4 Mai",days:[
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body + Core",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"footing_reprise",lbl:"Footing Reprise",sub:"Pyramide douce",dur:"38 MIN",c:"var(--p1)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s3",lbl:"Salle S3",sub:"Upper + Cardio",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"long_50",lbl:"Sortie Longue",sub:"50 min fond",dur:"50 MIN",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S02",title:"Construction de base",date:"5 – 11 Mai",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"intervalles_doux",lbl:"Intervalles Doux",sub:"3×(6min/2min)",dur:"40 MIN",c:"var(--p1)"},
+      {t:"gym",k:"s3",lbl:"Salle S3",sub:"Upper + Cardio",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"long_55",lbl:"Sortie Longue",sub:"Terrain varié",dur:"55 MIN",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S03",title:"Endurance + Côtes",date:"12 – 18 Mai",days:[
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"cotes_courtes",lbl:"Côtes Courtes",sub:"5× 80-150m",dur:"42 MIN",c:"var(--orange)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Upper (sans fentes)",dur:"~50min",c:"var(--gym)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"long_65",lbl:"Sortie Longue+",sub:"50min + accél",dur:"1H05",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S04",title:"Relâche — Fartlek",date:"19 – 25 Mai",days:[
+      {t:"gym",k:"s3",lbl:"Salle S3",sub:"Upper + Cardio",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"fartlek_libre",lbl:"Fartlek Libre",sub:"Semaine relâche",dur:"38 MIN",c:"var(--p1)"},
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s3",lbl:"Salle S3",sub:"Upper + Cardio",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"trail_60",lbl:"Trail Découverte",sub:"60 min",dur:"1H00",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S05",title:"Montée en volume",date:"26 Mai – 1 Juin",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"cotes_longues",lbl:"Côtes Longues",sub:"6× 200-300m",dur:"45 MIN",c:"var(--orange)"},
+      {t:"gym",k:"s3",lbl:"Salle S3",sub:"Upper + Cardio",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"sortie_progressive",lbl:"Sortie Progressive",sub:"30+30+10 min",dur:"1H15",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S06",title:"Endurance confirmée",date:"2 – 8 Juin",days:[
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"blocs_tempo",lbl:"Blocs Tempo",sub:"4×(5min/3min)",dur:"48 MIN",c:"var(--p1)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",c:"var(--gym)"},
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"long_cible",lbl:"Long + Allure Cible",sub:"55min+10min 5'00\"",dur:"1H15",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S07",title:"Pic de volume Phase 1",date:"9 – 15 Juin",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"footing_strides",lbl:"Footing + Strides",sub:"30min + 5×20sec",dur:"50 MIN",c:"var(--p1)"},
+      {t:"gym",k:"s3",lbl:"Salle S3",sub:"Upper + Cardio",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"trail_denivele",lbl:"Trail Dénivelé",sub:"1h15 ~6/10",dur:"1H25",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S08",title:"Bilan — Test 5 km",date:"16 – 22 Juin",days:[
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"footing_leger",lbl:"Footing Léger",sub:"Pré-test",dur:"40 MIN",c:"var(--p1)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s3",lbl:"Salle S3",sub:"Upper + Cardio",dur:"~60min",c:"var(--gym)"},
+      {t:"gym",k:"s2",lbl:"Salle S2 ↘",sub:"Léger avant test",dur:"~45min",c:"var(--gym)"},
+      {t:"run",k:"test_5k",lbl:"⚡ TEST 5 km",sub:"Bilan Phase 1",dur:"~38 MIN",c:"var(--gold)"},
+      {t:"rest"}]},
+  ]},
+  {id:"p2",label:"Phase 2 · Développement",color:"var(--p2)",weeks:[
+    {num:"S09",title:"Premier VMA",date:"23 – 29 Juin",days:[
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"vma_6x2",lbl:"⚡ VMA 6×2min",sub:"4'30-4'40\"/km",dur:"45 MIN",c:"var(--p2)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"recup_35",lbl:"Récup Active",sub:"Très lent",dur:"35 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Upper (sans fentes)",dur:"~50min",c:"var(--gym)"},
+      {t:"run",k:"long_cible2",lbl:"Long + Allure",sub:"55min+20min 5'00\"",dur:"1H25",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S10",title:"VMA renforcé + Côtes",date:"30 Juin – 6 Juil",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"vma_8x2",lbl:"⚡ VMA 8×2min",sub:"4'30\"/km",dur:"48 MIN",c:"var(--p2)"},
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"recup_strides",lbl:"Récup + Strides",sub:"Footing doux",dur:"38 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",c:"var(--gym)"},
+      {t:"run",k:"cotes_long_run",lbl:"Côtes Longues",sub:"8×200m + footing",dur:"1H10",c:"var(--orange)"},
+      {t:"rest"}]},
+    {num:"S11",title:"Répétitions 3 min",date:"7 – 13 Juil",days:[
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"vma_3min",lbl:"⚡ VMA 6×3min",sub:"4'40\"/km",dur:"50 MIN",c:"var(--p2)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"recup_trail",lbl:"Trail Récup",sub:"35-40min doux",dur:"40 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",c:"var(--gym)"},
+      {t:"run",k:"double_bloc",lbl:"Long Double Bloc",sub:"45min+2×15min 5'00\"",dur:"1H35",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S12",title:"Semaine de relâche",date:"14 – 20 Juil",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"fartlek_struct",lbl:"Fartlek Structuré",sub:"2min/3min",dur:"42 MIN",c:"var(--p1)"},
+      {t:"gym",k:"s3",lbl:"Salle S3",sub:"Upper + Cardio",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"marche_active",lbl:"Marche Active",sub:"Récup légère",dur:"30 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"trail_plaisir",lbl:"Trail Plaisir",sub:"1h15 ~6/10",dur:"1H15",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S13",title:"Premier Seuil",date:"21 – 27 Juil",days:[
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"seuil_1",lbl:"🔴 Seuil 4×6min",sub:"4'45-4'50\"/km",dur:"52 MIN",c:"var(--pink)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"recup_tech",lbl:"Récup + Technique",sub:"Éducatifs",dur:"38 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",c:"var(--gym)"},
+      {t:"run",k:"double_bloc",lbl:"Long Blocs Cible",sub:"40min+3×10min 5'00\"",dur:"1H40",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S14",title:"Seuil renforcé",date:"28 Juil – 3 Août",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"seuil_2",lbl:"🔴 Seuil 3×8min",sub:"4'45\"/km",dur:"55 MIN",c:"var(--pink)"},
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"recup_35",lbl:"Récup Active",sub:"Footing lent",dur:"35 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",c:"var(--gym)"},
+      {t:"run",k:"cotes_sprint",lbl:"Côtes Sprint + Long",sub:"10×sprint+35min",dur:"1H20",c:"var(--orange)"},
+      {t:"rest"}]},
+    {num:"S15",title:"Pic intensité Phase 2",date:"4 – 10 Août",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"seuil_long",lbl:"🔴 Seuil 20min",sub:"20min+10min",dur:"55 MIN",c:"var(--pink)"},
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"recup_trail",lbl:"Trail Récup",sub:"Terrain mou",dur:"40 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",c:"var(--gym)"},
+      {t:"run",k:"trail_deport",lbl:"Trail D+ 1h45",sub:"250-400m dénivelé",dur:"1H45",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S16",title:"Test 10 km",date:"11 – 17 Août",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"footing_strides2",lbl:"Footing + Strides",sub:"Léger pré-test",dur:"40 MIN",c:"var(--p1)"},
+      {t:"gym",k:"s3",lbl:"Salle S3",sub:"Upper + Cardio",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"recup_lent",lbl:"Récup Ultra-Lent",sub:"Pré-test",dur:"30 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s1lite",lbl:"Salle S1 ↘",sub:"Léger avant test",dur:"~45min",c:"var(--gym)"},
+      {t:"run",k:"test_10k",lbl:"⚡ TEST 10 km",sub:"Objectif ~55min",dur:"~60 MIN",c:"var(--gold)"},
+      {t:"rest"}]},
+  ]},
+  {id:"p3",label:"Phase 3 · Spécifique",color:"var(--p3)",weeks:[
+    {num:"S17",title:"Entrée zone spécifique",date:"18 – 24 Août",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"allure_3x15",lbl:"🎯 3×15min Allure",sub:"5'00\"/km",dur:"55 MIN",c:"var(--p3)"},
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"soutien_allure",lbl:"Soutien Allure",sub:"3×3min 5'00\"",dur:"42 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",c:"var(--gym)"},
+      {t:"run",k:"long_max",lbl:"Long Max 1h50",sub:"50min+40min 5'00\"",dur:"1H50",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S18",title:"Consolidation allure",date:"25 – 31 Août",days:[
+      {t:"gym",k:"s1",lbl:"Salle S1",sub:"Lower Body",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"combo_seuil",lbl:"🔴 Seuil + Allure",sub:"2×8min+2×8min",dur:"55 MIN",c:"var(--pink)"},
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"trail_recup",lbl:"Trail Récup",sub:"35-40min doux",dur:"40 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",c:"var(--gym)"},
+      {t:"run",k:"long_sim",lbl:"Longue Simulation",sub:"45min+50min 5'00\"",dur:"1H45",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S19",title:"Séance cœur de cible",date:"1 – 7 Sep",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"allure_2x25",lbl:"🎯 2×25min Allure",sub:"50min total 5'00\"",dur:"1H05",c:"var(--p3)"},
+      {t:"gym",k:"s1lite",lbl:"Salle S1 ↘ -15%",sub:"Charges allégées",dur:"~50min",c:"var(--gym)"},
+      {t:"run",k:"rappels_allure",lbl:"Rappels Allure",sub:"4×2min 5'00\"",dur:"40 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Upper léger",dur:"~45min",c:"var(--gym)"},
+      {t:"run",k:"cotes_long2",lbl:"Côtes + Long",sub:"6×+40min fond",dur:"1H30",c:"var(--orange)"},
+      {t:"rest"}]},
+    {num:"S20",title:"Semaine de relâche",date:"8 – 14 Sep",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"footing_relache",lbl:"Footing Doux",sub:"Semaine relâche",dur:"40 MIN",c:"var(--p1)"},
+      {t:"gym",k:"s3",lbl:"Salle S3",sub:"Upper + Cardio",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"mobilite",lbl:"Mobilité + Marche",sub:"30 min",dur:"30 MIN",c:"var(--teal)"},
+      {t:"rest"},
+      {t:"run",k:"trail_plaisir",lbl:"Trail Plaisir",sub:"1h15",dur:"1H15",c:"var(--green)"},
+      {t:"rest"}]},
+    {num:"S21",title:"Séance référence + Test",date:"15 – 21 Sep",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"allure_40min",lbl:"🎯 40min Continu",sub:"5'00\"/km non-stop",dur:"1H00",c:"var(--p3)"},
+      {t:"gym",k:"s1lite",lbl:"Salle S1 ↘ -15%",sub:"Charges allégées",dur:"~50min",c:"var(--gym)"},
+      {t:"run",k:"recup_test",lbl:"Récup Pré-Test",sub:"Ultra-lent",dur:"30 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Très léger",dur:"~40min",c:"var(--gym)"},
+      {t:"run",k:"test_10k_allure",lbl:"⚡ Test 10km Allure",sub:"Objectif 50min",dur:"~55 MIN",c:"var(--gold)"},
+      {t:"rest"}]},
+    {num:"S22",title:"Dernière semaine intense",date:"22 – 28 Sep",days:[
+      {t:"gym",k:"s2",lbl:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",c:"var(--gym)"},
+      {t:"run",k:"verif_30",lbl:"🎯 Vérif 30min",sub:"+3×30sec 4'30\"",dur:"55 MIN",c:"var(--p3)"},
+      {t:"gym",k:"s1lite",lbl:"Salle S1 ↘",sub:"Charges allégées",dur:"~50min",c:"var(--gym)"},
+      {t:"run",k:"last_trail",lbl:"Last Trail",sub:"30-35min doux",dur:"35 MIN",c:"var(--teal)"},
+      {t:"gym",k:"s3lite",lbl:"Salle S3 ↘",sub:"Upper léger",dur:"~40min",c:"var(--gym)"},
+      {t:"run",k:"long_final",lbl:"Longue Finale",sub:"40min+30min 5'00\"",dur:"1H20",c:"var(--green)"},
+      {t:"rest"}]},
+  ]},
+  {id:"p4",label:"Phase 4 · Affûtage",color:"var(--p4)",weeks:[
+    {num:"S23",title:"Début affûtage — J-19",date:"29 Sep – 5 Oct",days:[
+      {t:"gym",k:"upper",lbl:"Salle Upper ↘↘",sub:"Très léger",dur:"~35min",c:"var(--gym)"},
+      {t:"run",k:"p4_frac",lbl:"Fractionné Allégé",sub:"4×3min ~4'55\"",dur:"45 MIN",c:"var(--p4)"},
+      {t:"gym",k:"s2light",lbl:"Salle S2 ↘↘",sub:"Fessiers + Dos léger",dur:"~40min",c:"var(--gym)"},
+      {t:"rest"},{t:"rest"},
+      {t:"run",k:"p4_touch",lbl:"Footing + Touche",sub:"40min+10min 5'00\"",dur:"55 MIN",c:"var(--p4)"},
+      {t:"rest"}]},
+    {num:"S24",title:"Semaine pré-Rome — J-12",date:"6 – 12 Oct",days:[
+      {t:"gym",k:"upper",lbl:"Salle Upper ↘↘",sub:"Très léger",dur:"~30min",c:"var(--gym)"},
+      {t:"run",k:"p4_leger",lbl:"Footing Léger",sub:"22min + accél",dur:"35 MIN",c:"var(--p4)"},
+      {t:"rest"},
+      {t:"run",k:"p4_activ",lbl:"Activation Finale",sub:"15min+2×3min",dur:"25 MIN",c:"var(--p4)"},
+      {t:"rest"},{t:"rest"},{t:"rest"}]},
+    {num:"J-2",title:"Veille de veille — 16 Oct",date:"2 jours avant Rome",days:[
+      {t:"rest"},{t:"rest"},{t:"rest"},
+      {t:"run",k:"p4_j2",lbl:"Activation Ultra-Douce",sub:"15min très léger",dur:"15 MIN",c:"var(--p4)"},
+      {t:"rest"},{t:"rest"},{t:"rest"}]},
+  ]},
+];
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let ST = {sessions:{},gymLogs:[],weights:[],currentWeight:60,shopItems:[],shopCategories:{}};
+const DAYS_H = ["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
+const getSID = (wn,di) => `${wn}_${di}`;
+function save(){try{localStorage.setItem('rome26',JSON.stringify(ST));}catch(e){}}
+function load(){try{const d=localStorage.getItem('rome26');if(d)ST={...ST,...JSON.parse(d)};}catch(e){}}
+
+// ══════════════════════════════════════════════════════════
+// PLANNING RENDER
+// ══════════════════════════════════════════════════════════
+function buildInlineRunDetail(key){
+  const def=RUN_DETAILS[key];
+  if(!def) return '';
+  const drills=def.drills.map(([icon,text,allure,cls])=>
+    `<div class="inline-drill"><span class="id-icon">${icon}</span><span class="id-text">${text}</span><span class="id-allure ${cls}">${allure}</span></div>`
+  ).join('');
+  const tip=def.tip?`<div class="inline-tip ${def.tipCls}">${def.tip}</div>`:'';
+  return `<div class="sess-detail-title">DÉROULÉ <span style="color:${def.color}">${def.dur}</span></div>${drills}${tip}`;
+}
+
+function buildInlineGymDetail(key){
+  const def=GYM_DETAILS[key];
+  if(!def) return '';
+  const prevLogs=ST.gymLogs.filter(l=>l.type===key).slice(-1)[0]?.exercises||[];
+  const prevMap={};prevLogs.forEach(ex=>{prevMap[ex.name]=ex.sets;});
+  const prevNote=prevLogs.length?`<div class="prev-perf-note">📊 Dernière séance : ${ST.gymLogs.filter(l=>l.type===key).slice(-1)[0]?.date||''} — Cliquer sur 📝 pour voir les charges</div>`:'';
+  const exs=def.exs.map(ex=>{
+    const prev=prevMap[ex.name];
+    const prevStr=prev?prev.filter(s=>s.weight).map(s=>`${s.weight}kg`).join('/'): '';
+    return `<div class="inline-gym-ex">
+      <div class="ige-name">${ex.name}<span style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-left:5px">${ex.sets}×${ex.reps}</span></div>
+      ${prevStr?`<span style="font-family:'DM Mono',monospace;font-size:8px;color:var(--gym)">⬆ ${prevStr}</span>`:''}
+      <div class="ige-tip">${ex.tip}</div>
+    </div>`;
+  }).join('');
+  return `<div class="sess-detail-title">EXERCICES <span style="color:var(--gym)">${def.exs.length} exercices</span></div>${prevNote}${exs}
+    <div class="sess-detail-footer"><button class="btn-detail-log btn-xs" onclick="openGymLogger('${key}','',event)">📝 Logger les charges</button></div>`;
+}
+
+function toggleInlineDetail(sid,e){
+  if(e)e.stopPropagation();
+  const el=document.getElementById('detail-'+sid);
+  if(!el)return;
+  el.classList.toggle('open');
+  const btn=document.getElementById('dbtn-'+sid);
+  if(btn)btn.textContent=el.classList.contains('open')?'▲ Fermer':'▼ Détail';
+}
+
+function renderPlanning(){
+  const container=document.getElementById('planning-container');
+  let html='';
+  PHASES.forEach(ph=>{
+    ph.weeks.forEach(wk=>{
+      const total=wk.days.filter(d=>d.t!=='rest').length;
+      const done=wk.days.filter((d,i)=>{if(d.t==='rest')return false;const s=ST.sessions[getSID(wk.num,i)];return s&&s.done;}).length;
+      const pct=total?Math.round(done/total*100):0;
+      const daysHtml=DAYS_H.map((day,i)=>{
+        const slot=wk.days[i];
+        const sid=getSID(wk.num,i);
+        const ss=ST.sessions[sid]||{};
+        if(!slot||slot.t==='rest') return `<div class="day-col"><div class="day-label-h">${day}</div><div class="day-rest">REPOS</div></div>`;
+
+        const cls=ss.done?'done':ss.skipped?'skipped':'';
+        const ratingDisp=ss.rating?`<div class="ds-rating">${'★'.repeat(Math.round(ss.rating/2))} ${ss.rating}/10</div>`:'';
+        const noteDisp=ss.note?`<div style="font-size:8px;color:var(--muted);padding:0 7px 4px;font-style:italic;line-height:1.3">"${ss.note.slice(0,50)}${ss.note.length>50?'...':''}"</div>`:'';
+
+        let actions='';
+        if(ss.done){
+          actions=`<div class="ds-actions">
+            <span style="font-size:8px;color:var(--green);font-family:'DM Mono',monospace;font-weight:600">✓ RÉALISÉE</span>
+            <button class="btn-xs btn-undo" onclick="undoSess('${wk.num}',${i},event)" title="Annuler la validation">↩ Annuler</button>
+          </div>`;
+        } else if(ss.skipped){
+          actions=`<div class="ds-actions">
+            <span style="font-size:8px;color:var(--red);font-family:'DM Mono',monospace">✗ PASSÉE</span>
+            <button class="btn-xs btn-undo" onclick="undoSess('${wk.num}',${i},event)" title="Annuler">↩</button>
+          </div>`;
+        } else {
+          const logBtn=slot.t==='gym'?`<button class="btn-xs btn-log" onclick="openGymLogger('${slot.k}','${wk.num}',event)" title="Logger charges">📝</button>`:'';
+          actions=`<div class="ds-actions">
+            <button class="btn-xs btn-done" onclick="markDone('${wk.num}',${i},'${slot.t}','${slot.lbl||''}',event)" title="Marquer réalisée">✓ Fait</button>
+            <button class="btn-xs btn-skip" onclick="markSkip('${wk.num}',${i},event)" title="Passer">✗</button>
+            ${logBtn}
+          </div>`;
+        }
+
+        // Inline detail toggle button
+        const hasDetail=(slot.t==='run'&&RUN_DETAILS[slot.k])||(slot.t==='gym'&&GYM_DETAILS[slot.k]);
+        const detailToggle=hasDetail?`<button class="btn-xs btn-detail" id="dbtn-${sid}" onclick="toggleInlineDetail('${sid}',event)">▼ Détail</button>`:'';
+
+        // Build inline detail content
+        let detailContent='';
+        if(slot.t==='run'&&RUN_DETAILS[slot.k]) detailContent=buildInlineRunDetail(slot.k);
+        else if(slot.t==='gym'&&GYM_DETAILS[slot.k]) detailContent=buildInlineGymDetail(slot.k);
+
+        return `<div class="day-col"><div class="day-label-h">${day}</div>
+          <div class="day-sess ${cls}" style="background:var(--s2)">
+            <div class="ds-head" style="background:${slot.c}18;border-left:3px solid ${slot.c}">
+              <div class="ds-type" style="color:${slot.c}">${slot.lbl}</div>
+              <div class="ds-dur" style="color:${slot.c}">${slot.dur||''}</div>
+            </div>
+            <div class="ds-name">${slot.sub}</div>
+            ${ratingDisp}${noteDisp}
+            <div class="ds-actions" style="padding-bottom:2px">${detailToggle}</div>
+            ${actions}
+            <div class="sess-detail" id="detail-${sid}">${detailContent}</div>
+          </div></div>`;
+      }).join('');
+      html+=`<div class="week-card" id="wk-${wk.num}">
+        <div class="week-header" onclick="toggleWk('${wk.num}')">
+          <div class="week-num" style="color:${ph.color}">${wk.num}</div>
+          <div class="week-info"><div class="week-title">${wk.title}</div><div class="week-sub">${wk.date} · ${ph.label}</div></div>
+          <div class="week-prog"><div class="week-prog-bar"><div class="week-prog-fill" style="width:${pct}%"></div></div><div class="week-prog-txt">${done}/${total}</div></div>
+          <div class="toggle-i">▾</div>
+        </div>
+        <div class="week-body"><div class="day-grid">${daysHtml}</div></div>
+      </div>`;
+    });
+  });
+  container.innerHTML=html;
+}
+
+function toggleWk(n){const c=document.getElementById('wk-'+n);if(c)c.classList.toggle('open');}
+
+function markDone(wn,di,type,lbl,e){
+  if(e)e.stopPropagation();
+  const sid=getSID(wn,di);
+  ST.sessions[sid]={done:true,skipped:false,date:new Date().toLocaleDateString('fr-FR'),type,label:lbl};
+  save();renderPlanning();updateDash();
+  showToast('✓ Séance validée ! Évalue ton ressenti 👇');
+  openRating(sid,lbl);
+}
+function markSkip(wn,di,e){
+  if(e)e.stopPropagation();
+  const sid=getSID(wn,di);
+  ST.sessions[sid]={done:false,skipped:true,date:new Date().toLocaleDateString('fr-FR')};
+  save();renderPlanning();updateDash();
+  showToast('Séance passée enregistrée');
+}
+function undoSess(wn,di,e){
+  if(e)e.stopPropagation();
+  const sid=getSID(wn,di);
+  delete ST.sessions[sid];
+  save();renderPlanning();updateDash();
+  showToast('↩ Séance annulée');
+}
+
+function showToast(msg){
+  let t=document.getElementById('toast');
+  if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--s1);border:1px solid var(--border);color:var(--text);font-family:"DM Mono",monospace;font-size:11px;padding:8px 18px;border-radius:7px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;letter-spacing:.08em';document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';
+  clearTimeout(t._tid);t._tid=setTimeout(()=>{t.style.opacity='0';},2200);
+}
+
+// ══════════════════════════════════════════════════════════
+// DETAIL MODAL
+// ══════════════════════════════════════════════════════════
+function openDetail(type,key,lbl,e){
+  if(e)e.stopPropagation();
+  if(!key){return;}
+  if(type==='gym'){
+    const def=GYM_DETAILS[key];
+    if(!def)return;
+    openModal(def.name,'Séance de musculation',renderGymDetail(def,key));
+  } else if(type==='run'){
+    const def=RUN_DETAILS[key];
+    if(!def)return;
+    openModal(def.name,`Course · ${def.dur}`,renderRunDetail(def));
+  }
+}
+
+function renderRunDetail(def){
+  const drillsHtml=def.drills.map(([icon,text,allure,cls])=>
+    `<div class="detail-drill"><span class="dd-icon">${icon}</span><span class="dd-text">${text}</span><span class="dd-allure ${cls}">${allure}</span></div>`
+  ).join('');
+  const tipHtml=def.tip?`<div class="detail-tip ${def.tipCls}">${def.tip}</div>`:'';
+  const header=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+    <div style="background:${def.color}18;border:1px solid ${def.color}40;border-radius:6px;padding:6px 12px;font-family:'Bebas Neue',sans-serif;font-size:22px;color:${def.color}">${def.dur}</div>
+    <div style="font-size:11px;color:var(--muted)">Clique sur ✓ dans le planning pour valider après la séance</div>
+  </div>`;
+  return header+`<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">DÉROULÉ DE LA SÉANCE</div>
+  <div class="detail-drills">${drillsHtml}</div>${tipHtml}`;
+}
+
+function renderGymDetail(def,key){
+  // Get previous weights from logs
+  const prevLogs=ST.gymLogs.filter(l=>l.type===key).slice(-1)[0]?.exercises||[];
+  const prevMap={};prevLogs.forEach(ex=>{prevMap[ex.name]=ex.sets;});
+
+  const exHtml=def.exs.map(ex=>{
+    const prev=prevMap[ex.name];
+    const prevStr=prev?prev.map(s=>`${s.reps||'?'}r ${s.weight?s.weight+'kg':''}`).join(' / '):'';
+    return `<div class="gym-ex-detail">
+      <div class="gym-ex-detail-name">
+        <span>${ex.name}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gym)">${ex.sets}×${ex.reps}</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:6px">${ex.desc} — ${ex.tip}</div>
+      ${prev?`<div class="gym-prev">Dernière fois : ${prevStr}</div>`:''}
+    </div>`;
+  }).join('');
+
+  return `<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--gym);margin-bottom:10px">EXERCICES DE LA SÉANCE</div>
+  ${exHtml}
+  <button class="btn-primary" onclick="openGymLogger('${key}','',null)" style="margin-top:4px">📝 ENREGISTRER LES CHARGES</button>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// RATING MODAL
+// ══════════════════════════════════════════════════════════
+let curRatId='',curRat=0;
+function openRating(sid,lbl){
+  curRatId=sid;curRat=0;
+  openModal('ÉVALUER LA SÉANCE',lbl,`
+    <div class="form-group"><label class="form-label">RESSENTI (1 = très dur / 10 = parfait)</label>
+      <div class="rating-wrap" id="rstars">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span class="rating-star" onclick="setRat(${n})" data-v="${n}">★</span>`).join('')}</div>
+    </div>
+    <div class="form-group"><label class="form-label">NOTES / RESSENTI</label>
+      <textarea class="form-textarea" id="r-note" placeholder="Comment tu t'es sentie ? Douleurs ? Énergie ?"></textarea>
+    </div>
+    <div class="form-group"><label class="form-label">DISTANCE / DURÉE RÉELLE</label>
+      <input type="text" class="form-input" id="r-dur" placeholder="Ex: 8.2 km en 42min30"></div>
+    <button class="btn-primary" onclick="saveRat()">ENREGISTRER</button>
+    <button class="btn-secondary" style="background:var(--s2);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:7px;border-radius:6px;margin-top:6px;width:100%" onclick="closeModal()">Passer</button>`);
+}
+function setRat(v){curRat=v;document.querySelectorAll('#rstars .rating-star').forEach(s=>s.classList.toggle('on',+s.dataset.v<=v));}
+function saveRat(){if(!curRatId)return;ST.sessions[curRatId]={...ST.sessions[curRatId]||{},rating:curRat,note:document.getElementById('r-note')?.value||'',actualDur:document.getElementById('r-dur')?.value||''};save();renderPlanning();updateDash();closeModal();}
+
+// ══════════════════════════════════════════════════════════
+// GYM LOGGER
+// ══════════════════════════════════════════════════════════
+let logK='s1',logWk='';let gymRat=0;
+function openGymLogger(key,wk,e){
+  if(e)e.stopPropagation();
+  logK=key||'s1';logWk=wk||'';gymRat=0;
+  const def=GYM_DETAILS[logK]||GYM_DETAILS['s1'];
+  const prevLogs=ST.gymLogs.filter(l=>l.type===logK).slice(-1)[0]?.exercises||[];
+  const prevMap={};prevLogs.forEach(ex=>{prevMap[ex.name]=ex.sets;});
+  const exRows=def.exs.map(ex=>{
+    const prev=prevMap[ex.name];
+    const prevStr=prev?'Dernière fois : '+prev.map(s=>`${s.reps||'?'}r${s.weight?' @ '+s.weight+'kg':''}`).join(' · '):'';
+    return `<div class="gym-ex-detail">
+      <div class="gym-ex-detail-name"><span>${ex.name}</span><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gym)">${ex.sets}×${ex.reps}</span></div>
+      ${prevStr?`<div class="gym-prev" style="margin-bottom:4px">${prevStr}</div>`:''}
+      <div class="gym-ex-sets">
+        ${[1,2,3].map(n=>`<div class="gym-set-box">
+          <div class="gym-set-label">Série ${n}</div>
+          <div class="gym-set-inputs">
+            <input class="gym-set-input" placeholder="Reps" data-ex="${ex.name}" data-s="${n}" data-t="reps">
+            <input class="gym-set-input" placeholder="kg" data-ex="${ex.name}" data-s="${n}" data-t="weight">
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  openModal(def.name,'Enregistrer ta séance',`
+    <div class="form-group"><label class="form-label">TYPE DE SÉANCE</label>
+      <select class="form-input" id="gym-type-sel" onchange="changeGymType(this.value)">${Object.entries(GYM_DETAILS).map(([k,v])=>`<option value="${k}"${k===logK?' selected':''}>${v.name}</option>`).join('')}</select>
+    </div>
+    <div class="form-group"><label class="form-label">DATE</label><input type="date" class="form-input" id="gym-date" value="${new Date().toISOString().slice(0,10)}"></div>
+    <div id="gym-ex-rows">${exRows}</div>
+    <div class="form-group" style="margin-top:10px"><label class="form-label">RESSENTI GLOBAL (1–10)</label>
+      <div class="rating-wrap" id="grstars">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span class="rating-star" onclick="setGymRat(${n})" data-v="${n}">★</span>`).join('')}</div>
+    </div>
+    <div class="form-group"><label class="form-label">NOTES</label><textarea class="form-textarea" id="gym-note" placeholder="Douleurs, énergie, progressions, charges faciles ou difficiles..."></textarea></div>
+    <button class="btn-primary" onclick="saveGymLog()">ENREGISTRER LA SÉANCE</button>`);
+}
+function setGymRat(v){gymRat=v;document.querySelectorAll('#grstars .rating-star').forEach(s=>s.classList.toggle('on',+s.dataset.v<=v));}
+function changeGymType(k){logK=k;openGymLogger(k,logWk,null);}
+function saveGymLog(){
+  const def=GYM_DETAILS[logK];const date=document.getElementById('gym-date').value;const note=document.getElementById('gym-note').value;
+  const exData={};document.querySelectorAll('#gym-ex-rows .gym-set-input').forEach(inp=>{const ex=inp.dataset.ex,s=inp.dataset.s,t=inp.dataset.t;if(!exData[ex])exData[ex]={};if(!exData[ex][s])exData[ex][s]={};exData[ex][s][t]=inp.value;});
+  const exercises=Object.entries(exData).map(([name,sets])=>({name,sets:Object.values(sets)}));
+  ST.gymLogs.push({date,type:logK,name:def.name,exercises,rating:gymRat,note});
+  gymRat=0;save();closeModal();renderGymHistory();renderPerfChart();updateDash();renderPlanning();showToast('💪 Séance salle enregistrée !');
+}
+function renderGymHistory(){
+  const c=document.getElementById('gym-history');
+  if(!ST.gymLogs.length){c.innerHTML='<div class="empty-state"><div class="big">🏋️‍♀️</div>Aucune séance. Clique sur "+ Nouvelle séance".</div>';return;}
+  const sorted=[...ST.gymLogs].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  c.innerHTML=sorted.map(log=>{
+    const stars=log.rating?'★'.repeat(log.rating)+'☆'.repeat(10-log.rating):'';
+    const exH=log.exercises.map(ex=>`<div class="hist-ex"><div class="hist-ex-name">${ex.name}</div><div class="hist-ex-sets">${ex.sets.map(s=>`${s.reps||'?'}r${s.weight?' @ '+s.weight+'kg':''}`).join(' · ')}</div></div>`).join('');
+    const delBtn=`<button onclick="delGymLog('${log.date}','${log.type}')" style="background:none;border:none;color:var(--muted);font-size:10px;opacity:.5;cursor:pointer" title="Supprimer">🗑</button>`;
+    return `<div class="hist-card">
+      <div class="hist-head"><div><div class="hist-date">${log.date}</div><div class="hist-type">${log.name}</div></div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="color:var(--gold);font-size:10px">${stars}</div>${delBtn}</div></div>
+      <div class="hist-body"><div class="hist-exs">${exH}</div>${log.note?`<div class="hist-note">"${log.note}"</div>`:''}</div>
+    </div>`;
+  }).join('');
+}
+function delGymLog(date,type){ST.gymLogs=ST.gymLogs.filter(l=>!(l.date===date&&l.type===type));save();renderGymHistory();renderPerfChart();}
+function renderPerfChart(){
+  const c=document.getElementById('perf-chart');
+  if(!ST.gymLogs.length){c.innerHTML='<div class="empty-state"><div class="big">💪</div>Enregistre des séances pour voir l\'évolution.</div>';return;}
+  const perf={};
+  ST.gymLogs.forEach(log=>{log.exercises.forEach(ex=>{ex.sets.forEach(set=>{const w=parseFloat(set.weight);if(!isNaN(w)&&w>0){if(!perf[ex.name])perf[ex.name]=[];perf[ex.name].push({date:log.date,w});}});});});
+  if(!Object.keys(perf).length){c.innerHTML='<div class="empty-state">Remplis les poids pour voir l\'évolution !</div>';return;}
+  c.innerHTML=Object.entries(perf).map(([name,entries])=>{
+    const sorted=entries.sort((a,b)=>new Date(a.date)-new Date(b.date));
+    const first=sorted[0].w,last=sorted[sorted.length-1].w,diff=(last-first).toFixed(1);
+    const trend=diff>0?`<span style="color:var(--green)">+${diff}kg ↑</span>`:diff<0?`<span style="color:var(--red)">${diff}kg ↓</span>`:`<span style="color:var(--muted)">stable</span>`;
+    return `<div class="perf-ex-card"><div class="perf-ex-name">${name}</div><div style="margin-bottom:5px;font-size:10px">${trend}</div>${sorted.slice(-3).map((e,i,arr)=>`<div class="perf-line"><div class="perf-dot" style="background:${i===arr.length-1?'var(--accent)':'var(--muted)'}"></div><div class="perf-txt" style="color:var(--muted)">${e.date}</div><div class="perf-val" style="font-family:'DM Mono',monospace;font-size:9px">${e.w}kg</div></div>`).join('')}</div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// SHOPPING LIST
+// ══════════════════════════════════════════════════════════
+const SHOP_CATS=[
+  {id:"feculents",label:"🍝 Féculents & Glucides",color:"var(--orange)",defaults:[
+    {name:"Flocons d'avoine",qty:"500g"},{name:"Riz basmati",qty:"1 kg"},{name:"Pâtes complètes",qty:"500g"},{name:"Pain complet",qty:"1 miche"},{name:"Pommes de terre",qty:"1 kg"},{name:"Quinoa",qty:"400g"},{name:"Patates douces",qty:"500g"},
+  ]},
+  {id:"proteines",label:"💪 Protéines",color:"var(--blue)",defaults:[
+    {name:"Poulet (filets)",qty:"1 kg"},{name:"Oeufs",qty:"12"},{name:"Saumon",qty:"400g"},{name:"Thon en boîte",qty:"3 boîtes"},{name:"Fromage blanc 0%",qty:"500g"},{name:"Lentilles",qty:"500g"},
+  ]},
+  {id:"fruits_legumes",label:"🥦 Fruits & Légumes",color:"var(--green)",defaults:[
+    {name:"Bananes",qty:"1 régime"},{name:"Épinards",qty:"300g"},{name:"Brocolis",qty:"500g"},{name:"Avocats",qty:"3"},{name:"Tomates cerises",qty:"250g"},{name:"Oranges",qty:"6"},{name:"Myrtilles",qty:"200g"},
+  ]},
+  {id:"sport",label:"🏃 Nutrition Sportive",color:"var(--accent)",defaults:[
+    {name:"Gels énergétiques",qty:"6"},{name:"Barres de céréales",qty:"10"},{name:"Boisson isotonique",qty:"1 kg poudre"},{name:"Magnésium",qty:"1 boîte"},{name:"Vitamine C",qty:"1 boîte"},
+  ]},
+  {id:"autres",label:"🛒 Autres",color:"var(--muted)",defaults:[]},
+];
+
+const QUICK_ITEMS=[
+  {name:"Gels énergétiques",cat:"sport"},{name:"Barres de céréales",cat:"sport"},
+  {name:"Flocons d'avoine",cat:"feculents"},{name:"Bananes",cat:"fruits_legumes"},
+  {name:"Poulet (filets)",cat:"proteines"},{name:"Riz basmati",cat:"feculents"},
+  {name:"Oeufs",cat:"proteines"},{name:"Boisson isotonique",cat:"sport"},
+];
+
+function initShop(){
+  if(!ST.shopCategories||!Object.keys(ST.shopCategories).length){
+    ST.shopCategories={};
+    SHOP_CATS.forEach(cat=>{
+      ST.shopCategories[cat.id]={items:[...cat.defaults.map(i=>({...i,checked:false,id:Date.now()+Math.random()}))]};
+    });
+    save();
+  }
+  renderShop();
+}
+
+function renderShop(){
+  const main=document.getElementById('shop-main');
+  main.innerHTML=SHOP_CATS.map(cat=>{
+    const items=(ST.shopCategories[cat.id]?.items||[]);
+    const itemsHtml=items.map(item=>`
+      <div class="shop-item${item.checked?' checked':''}" onclick="toggleItem('${cat.id}','${item.id}')">
+        <div class="shop-cb"><span class="shop-cb-check">✓</span></div>
+        <div class="shop-item-name">${item.name}</div>
+        <div class="shop-item-qty">${item.qty||''}</div>
+        <button class="shop-item-del" onclick="delItem('${cat.id}','${item.id}',event)">✕</button>
+      </div>`).join('');
+    return `<div class="shop-cat-card">
+      <div class="shop-cat-head" onclick="toggleCat('${cat.id}')">
+        <div class="shop-cat-title" style="color:${cat.color}">${cat.label}<span class="shop-cat-count">${items.filter(i=>!i.checked).length}/${items.length}</span></div>
+        <div class="toggle-i" id="cat-toggle-${cat.id}">▾</div>
+      </div>
+      <div id="cat-body-${cat.id}">
+        <div class="shop-items">${itemsHtml}</div>
+        <div class="shop-add">
+          <input id="add-input-${cat.id}" placeholder="Ajouter un article..." onkeydown="if(event.key==='Enter')addItem('${cat.id}')">
+          <input id="add-qty-${cat.id}" placeholder="Qté" style="width:70px">
+          <button onclick="addItem('${cat.id}')">+</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Quick add
+  document.getElementById('quick-add-list').innerHTML=QUICK_ITEMS.map(q=>`
+    <div onclick="quickAddItem('${q.name}','${q.cat}')" style="display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--s2);border-radius:5px;cursor:pointer;margin-bottom:3px;border:1px solid var(--border);font-size:11px;transition:border-color .15s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+      <span>${q.name}</span><span style="color:var(--accent);font-size:12px">+</span>
+    </div>`).join('');
+
+  updateShopStats();
+}
+
+function toggleCat(id){const b=document.getElementById('cat-body-'+id);const t=document.getElementById('cat-toggle-'+id);if(b){const hidden=b.style.display==='none';b.style.display=hidden?'block':'none';if(t)t.style.transform=hidden?'':'rotate(-90deg)';}}
+function toggleItem(cat,id){const items=ST.shopCategories[cat]?.items||[];const idx=items.findIndex(i=>i.id==id);if(idx>=0){items[idx].checked=!items[idx].checked;save();renderShop();}}
+function delItem(cat,id,e){e.stopPropagation();ST.shopCategories[cat].items=ST.shopCategories[cat].items.filter(i=>i.id!=id);save();renderShop();}
+function addItem(cat){const n=document.getElementById('add-input-'+cat)?.value.trim();const q=document.getElementById('add-qty-'+cat)?.value.trim();if(!n)return;if(!ST.shopCategories[cat])ST.shopCategories[cat]={items:[]};ST.shopCategories[cat].items.push({name:n,qty:q,checked:false,id:Date.now()+Math.random()});document.getElementById('add-input-'+cat).value='';document.getElementById('add-qty-'+cat).value='';save();renderShop();}
+function quickAddItem(name,cat){if(!ST.shopCategories[cat])ST.shopCategories[cat]={items:[]};if(!ST.shopCategories[cat].items.find(i=>i.name===name)){ST.shopCategories[cat].items.push({name,qty:'',checked:false,id:Date.now()+Math.random()});save();renderShop();}}
+function clearChecked(){SHOP_CATS.forEach(cat=>{if(ST.shopCategories[cat.id])ST.shopCategories[cat.id].items=ST.shopCategories[cat.id].items.filter(i=>!i.checked);});save();renderShop();}
+function clearAll(){if(confirm('Vider toute la liste ?')){SHOP_CATS.forEach(cat=>{if(ST.shopCategories[cat.id])ST.shopCategories[cat.id].items=[];});save();renderShop();}}
+function updateShopStats(){let total=0,done=0;SHOP_CATS.forEach(cat=>{const items=ST.shopCategories[cat.id]?.items||[];total+=items.length;done+=items.filter(i=>i.checked).length;});document.getElementById('shop-total').textContent=total;document.getElementById('shop-done').textContent=done;document.getElementById('shop-left').textContent=total-done;}
+
+async function getAiSuggestions(type){
+  const res=document.getElementById('ai-shop-result');
+  res.className='ai-result show';res.innerHTML='⏳ Génération en cours...';
+  const prompts={
+    sport:`Liste de courses sportive pour une coureuse de semi-marathon en préparation (60kg, 168cm). Donne 10-12 produits essentiels pour la nutrition sportive et la récupération. Format : une puce par item avec la quantité recommandée pour la semaine.`,
+    semaine:`Liste de courses alimentaire complète pour une semaine d'entraînement intensif (course + salle). Profil : femme 27 ans 60kg, 3-4 séances course + 4 séances salle par semaine. Inclure tous les groupes alimentaires. Format : par catégorie avec quantités.`,
+    "avant-course":`Liste de courses pour préparer les 3 jours avant un semi-marathon (charge glucidique). Femme 60kg. Quoi acheter pour optimiser les réserves glycogène et être au top le jour J.`,
+  };
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompts[type]}]})});
+    const d=await r.json();
+    const txt=d.content?.map(b=>b.text||'').join('')||'Erreur';
+    res.innerHTML=txt.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^•/gm,'·');
+  }catch(e){res.innerHTML='Connexion impossible. Vérifie ta connexion.';}
+}
+
+// ══════════════════════════════════════════════════════════
+// WEIGHT
+// ══════════════════════════════════════════════════════════
+function logWeight(){
+  const kg=parseFloat(document.getElementById('weight-input').value);
+  const date=document.getElementById('weight-date').value||new Date().toISOString().slice(0,10);
+  if(isNaN(kg)||kg<30||kg>150)return;
+  ST.weights.push({date,kg});ST.weights.sort((a,b)=>new Date(a.date)-new Date(b.date));ST.currentWeight=kg;
+  save();renderWeightLog();updateDash();updateNutriMacros();
+}
+function renderWeightLog(){
+  const el=document.getElementById('weight-log');if(!ST.weights.length){el.innerHTML='';return;}
+  el.innerHTML=ST.weights.slice(-6).reverse().map((w,i,arr)=>{const prev=arr[i+1];const diff=prev?(w.kg-prev.kg).toFixed(1):null;const t=diff===null?'':diff>0?`<span style="color:var(--red)">+${diff}kg</span>`:diff<0?`<span style="color:var(--green)">${diff}kg</span>`:'';return `<div class="weight-entry"><div class="weight-entry-date">${w.date}</div><div style="font-weight:600;color:var(--accent)">${w.kg} kg ${t}</div></div>`;}).join('');
+  const nw=document.getElementById('n-weight');if(nw)nw.textContent=ST.currentWeight.toFixed(1);
+  const imc=(ST.currentWeight/(1.68*1.68)).toFixed(1);const nimcEl=document.getElementById('n-imc');if(nimcEl)nimcEl.textContent=imc;
+}
+
+// ══════════════════════════════════════════════════════════
+// NUTRITION AI
+// ══════════════════════════════════════════════════════════
+function updateNutriMacros(){
+  const w=ST.currentWeight;const g=Math.round(w*5.5),p=Math.round(w*1.6),l=Math.round(w*1.2),kcal=g*4+p*4+l*9;
+  document.getElementById('m-g').textContent=g+'g';document.getElementById('m-p').textContent=p+'g';document.getElementById('m-l').textContent=l+'g';document.getElementById('m-kcal').textContent=kcal;
+  document.getElementById('macro-phase-label').textContent=`Pour ${w}kg · Jour d'entraînement`;
+}
+function updateNutriWeight(){const v=parseFloat(document.getElementById('nutri-weight').value);if(isNaN(v)||v<30||v>150)return;ST.currentWeight=v;ST.weights.push({date:new Date().toISOString().slice(0,10),kg:v});save();renderWeightLog();updateNutriMacros();document.getElementById('nutri-weight').value='';}
+
+function getCurrentPhase(){const done=Object.values(ST.sessions).filter(s=>s.done).length;if(done<16)return"Phase 1 — Fondation";if(done<40)return"Phase 2 — Développement (VMA + Seuil)";if(done<58)return"Phase 3 — Spécifique (allure cible 5'00\"/km)";return"Phase 4 — Affûtage";}
+
+async function sendMsg(){
+  const inp=document.getElementById('chat-input');const msg=inp.value.trim();if(!msg)return;inp.value='';
+  addMsg(msg,'user');document.getElementById('btn-send').disabled=true;
+  const loading=addMsg('⏳ Analyse en cours...','ai',true);
+  const ctx=`Tu es un coach nutrition expert pour athlètes d'endurance. Profil : femme 27 ans ${ST.currentWeight}kg 168cm. Objectif : Semi-marathon Rome 18 oct 2026 objectif 1h45. Programme : course + musculation salle. Phase : ${getCurrentPhase()}. Poids récents : ${ST.weights.slice(-3).map(w=>w.kg+'kg le '+w.date).join(', ')||'60kg'}. Réponds en français, structuré avec emojis, utilise gras et listes.`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:ctx+'\n\nQuestion : '+msg}]})});
+    const d=await r.json();
+    const txt=d.content?.map(b=>b.text||'').join('')||'Erreur';
+    loading.remove();addMsg(fmt(txt),'ai');
+  }catch(e){loading.remove();addMsg('Connexion impossible.','ai');}
+  document.getElementById('btn-send').disabled=false;
+}
+function fmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^##+ (.*)/gm,'<strong style="color:var(--accent)">$1</strong>').replace(/^- (.*)/gm,'• $1').replace(/\n/g,'<br>');}
+function addMsg(text,who,temp=false){const el=document.createElement('div');el.className=`msg msg-${who}`;el.innerHTML=text;const c=document.getElementById('chat-messages');c.appendChild(el);c.scrollTop=c.scrollHeight;return el;}
+function quickMsg(msg){document.getElementById('chat-input').value=msg;sendMsg();}
+function clearChat(){document.getElementById('chat-messages').innerHTML=`<div class="msg msg-ai"><strong>Coach Nutrition IA 🥗</strong><br><br>Chat effacé. Profil : <strong>${ST.currentWeight}kg · 168cm · 27 ans</strong></div>`;}
+
+// ══════════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════════
+function updateDash(){
+  let done=0,total=0,p1d=0,p1t=0,p2d=0,p2t=0,p3d=0,p3t=0,p4d=0,p4t=0;
+  PHASES.forEach((ph,pi)=>{ph.weeks.forEach(wk=>{wk.days.forEach((day,di)=>{if(day.t==='rest')return;total++;if(pi===0)p1t++;if(pi===1)p2t++;if(pi===2)p3t++;if(pi===3)p4t++;const s=ST.sessions[getSID(wk.num,di)];if(s&&s.done){done++;if(pi===0)p1d++;if(pi===1)p2d++;if(pi===2)p3d++;if(pi===3)p4d++;}});});});
+  document.getElementById('d-done').textContent=done;document.getElementById('d-total').textContent=total;
+  const pct=(d,t)=>t?Math.round(d/t*100):0;
+  [[p1d,p1t],[p2d,p2t],[p3d,p3t],[p4d,p4t]].forEach(([d,t],i)=>{const v=pct(d,t);document.getElementById('pb'+(i+1)).style.width=v+'%';document.getElementById('pt'+(i+1)).textContent=v+'%';});
+  const vt=pct(done,total);document.getElementById('pb-total').style.width=vt+'%';document.getElementById('pt-total').textContent=vt+'%';
+  const phases=['Fondation','Développement','Spécifique','Affûtage'];const pi=p4d>0?3:p3d>0?2:p2d>0?1:0;
+  document.getElementById('d-phase').textContent=phases[pi];document.getElementById('d-phase-sub').textContent=`${[p1d,p2d,p3d,p4d][pi]} séances réalisées`;
+  if(ST.weights.length){const last=ST.weights[ST.weights.length-1];document.getElementById('d-weight').textContent=last.kg.toFixed(1);if(ST.weights.length>1){const prev=ST.weights[ST.weights.length-2];const diff=(last.kg-prev.kg).toFixed(1);const el=document.getElementById('d-weight-trend');el.textContent=diff>0?`+${diff}kg`:`${diff}kg`;el.className='stat-trend '+(diff>0?'up':'down');}}
+  const recent=Object.values(ST.sessions).filter(s=>s.done&&s.rating>0);
+  if(recent.length){document.getElementById('d-rating').textContent=(recent.reduce((a,s)=>a+s.rating,0)/recent.length).toFixed(1);}
+  const recents=Object.entries(ST.sessions).filter(([,s])=>s.done).sort((a,b)=>new Date(b[1].date||0)-new Date(a[1].date||0)).slice(0,5);
+  const recDiv=document.getElementById('recent-sessions');
+  if(recents.length){recDiv.innerHTML=recents.map(([id,s])=>{const isG=s.type==='gym';const stars=s.rating?Array(10).fill(0).map((_,i)=>`<span style="color:${i<s.rating?'var(--gold)':'var(--muted)'};font-size:9px">★</span>`).join(''):'';return `<div class="sess-log-item"><span class="sess-log-type ${isG?'pill-gym':'pill-run'}">${isG?'SALLE':'COURSE'}</span><span class="sess-log-name">${s.label||id}</span><span>${stars.slice(0,stars.indexOf('</span>',s.rating*46+1)+6)}</span><span class="sess-log-date">${s.date||''}</span></div>`;}).join('');}
+  if(done>0&&recent.length){const avg=recent.reduce((a,s)=>a+s.rating,0)/recent.length;let tip='';if(avg<5)tip=`⚠️ Ressenti moyen ${avg.toFixed(1)}/10. Augmente le sommeil et revoir la nutrition post-effort. Une semaine de relâche peut s'imposer.`;else if(avg>=8)tip=`🚀 Excellent ressenti (${avg.toFixed(1)}/10) ! Continue sur cette lancée. Veille à la récupération.`;else tip=`✅ Bon ressenti (${avg.toFixed(1)}/10). Programme bien toléré. Reste attentive à l'hydratation et au sommeil.`;document.getElementById('ai-tip-text').textContent=tip;}
+}
+
+// ══════════════════════════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════════════════════════
+function openModal(title,sub,body){document.getElementById('m-title').textContent=title;document.getElementById('m-sub').textContent=sub||'';document.getElementById('m-body').innerHTML=body||'';document.getElementById('modal').classList.add('open');}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+
+// ══════════════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════════════
+function switchTab(idx){document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===idx));document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+load();
+document.getElementById('weight-date').value=new Date().toISOString().slice(0,10);
+renderPlanning();
+renderGymHistory();
+renderPerfChart();
+renderWeightLog();
+updateDash();
+updateNutriMacros();
+initShop();
+</script>
+</body>
+</html>
