@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rome 2026 — Coach Complet</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d0f;--s1:#141417;--s2:#1c1c21;--s3:#222228;--border:#2a2a32;
+  --accent:#e8ff47;--orange:#ff6b35;--blue:#47c5ff;--text:#f0f0f0;
+  --muted:#6b6b7a;--p1:#47c5ff;--p2:#e8ff47;--p3:#ff6b35;--p4:#c084fc;
+  --green:#4ade80;--pink:#f472b6;--teal:#34d399;--gold:#fbbf24;--gym:#a78bfa;
+  --red:#f87171;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;min-height:100vh}
+button{cursor:pointer;font-family:'DM Sans',sans-serif}
+input,textarea,select{font-family:'DM Sans',sans-serif;font-size:13px}
+
+/* ── HERO ── */
+.hero{padding:44px 32px 36px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;top:-60px;right:-60px;width:360px;height:360px;background:radial-gradient(circle,rgba(232,255,71,.05) 0%,transparent 70%);pointer-events:none}
+.hero-tag{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.hero-tag::before{content:'';width:18px;height:1px;background:var(--accent)}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6vw,80px);line-height:.9;letter-spacing:.02em;margin-bottom:14px}
+.hero h1 span{color:var(--accent)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.meta-pill{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:6px 11px;font-size:11px}
+.meta-pill .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.meta-pill strong{font-weight:600;color:var(--accent)}
+
+/* ── TABS ── */
+.tabs-wrap{position:sticky;top:0;z-index:200;background:var(--bg);border-bottom:1px solid var(--border);padding:0 32px;display:flex;overflow-x:auto;scrollbar-width:none}
+.tabs-wrap::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;background:none;border:none;padding:14px 18px;font-size:12px;font-weight:400;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--pc,var(--accent))}
+.tab-btn .pdot{width:7px;height:7px;border-radius:50%;background:var(--pc,var(--accent))}
+.tab-btn .notif{background:var(--orange);color:#fff;font-size:9px;font-family:'DM Mono',monospace;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center}
+
+/* ── CONTENT ── */
+.content{padding:28px 32px;max-width:1200px}
+.panel{display:none}
+.panel.active{display:block}
+
+/* ── DASHBOARD ── */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--sc,var(--accent))}
+.stat-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--text);letter-spacing:.03em;line-height:1}
+.stat-unit{font-size:11px;color:var(--muted);margin-top:3px}
+.stat-trend{font-size:10px;margin-top:4px}
+.stat-trend.up{color:var(--green)}
+.stat-trend.down{color:var(--red)}
+
+.dash-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.dash-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:18px}
+.dash-card h3{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;color:var(--text);margin-bottom:14px}
+
+/* Recent sessions */
+.sess-log-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--s2);border-radius:7px;margin-bottom:6px;border:1px solid var(--border)}
+.sess-log-type{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;padding:2px 7px;border-radius:3px;flex-shrink:0}
+.sess-log-name{flex:1;font-size:12px}
+.sess-log-rating{display:flex;gap:2px}
+.star{font-size:11px;color:var(--muted)}
+.star.on{color:var(--gold)}
+.sess-log-date{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)}
+
+/* Progress chart */
+.prog-bars{display:flex;flex-direction:column;gap:8px}
+.prog-row{display:flex;align-items:center;gap:10px;font-size:11px}
+.prog-label{width:100px;color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0}
+.prog-bar-wrap{flex:1;height:6px;background:var(--s2);border-radius:3px;overflow:hidden}
+.prog-bar{height:100%;border-radius:3px;transition:width .6s ease}
+.prog-pct{width:35px;text-align:right;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)}
+
+/* AI tip box */
+.ai-tip{background:linear-gradient(135deg,rgba(232,255,71,.05),rgba(71,197,255,.03));border:1px solid rgba(232,255,71,.15);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.ai-tip-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}
+.ai-tip p{font-size:12px;color:var(--muted);line-height:1.7}
+
+/* ── PLANNING ── */
+.week-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px;transition:border-color .2s}
+.week-header{display:flex;align-items:center;padding:12px 16px;cursor:pointer;gap:10px}
+.week-num{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--wc,var(--accent));width:50px;flex-shrink:0}
+.week-info{flex:1}
+.week-title{font-size:13px;font-weight:600}
+.week-sub{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+.week-prog{display:flex;align-items:center;gap:6px}
+.week-prog-bar{width:80px;height:4px;background:var(--s2);border-radius:2px;overflow:hidden}
+.week-prog-fill{height:100%;background:var(--green);border-radius:2px;transition:width .3s}
+.week-prog-txt{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)}
+.toggle-i{color:var(--muted);font-size:14px;transition:transform .3s;flex-shrink:0}
+.week-card.open .toggle-i{transform:rotate(180deg)}
+.week-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}
+.week-card.open .week-body{display:block}
+
+.day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:14px}
+.day-col{display:flex;flex-direction:column;gap:4px}
+.day-label-h{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;padding:4px;border-bottom:1px solid var(--border)}
+
+.day-sess{border-radius:7px;border:1px solid var(--border);overflow:hidden;position:relative;transition:all .2s}
+.day-sess.done{opacity:.7}
+.day-sess.done::after{content:'✓';position:absolute;top:4px;right:5px;font-size:12px;color:var(--green);font-weight:700}
+.day-sess.skipped::after{content:'✗';position:absolute;top:4px;right:5px;font-size:12px;color:var(--red);font-weight:700}
+.ds-head{padding:6px 8px;display:flex;align-items:center;justify-content:space-between}
+.ds-type{font-size:8px;font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
+.ds-dur{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.05em}
+.ds-name{padding:0 8px 5px;font-size:10px;font-weight:600;line-height:1.3}
+.ds-actions{padding:4px 8px 7px;display:flex;gap:4px}
+.btn-done{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);color:var(--green);font-size:9px;font-family:'DM Mono',monospace;padding:3px 7px;border-radius:4px;letter-spacing:.06em;transition:all .15s}
+.btn-done:hover{background:rgba(74,222,128,.2)}
+.btn-skip{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);color:var(--red);font-size:9px;font-family:'DM Mono',monospace;padding:3px 7px;border-radius:4px;letter-spacing:.06em}
+.btn-log{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);color:var(--gym);font-size:9px;font-family:'DM Mono',monospace;padding:3px 7px;border-radius:4px;letter-spacing:.06em}
+.day-rest{background:var(--s2);border-radius:7px;border:1px dashed var(--border);padding:12px 6px;text-align:center;color:var(--muted);font-size:9px;font-family:'DM Mono',monospace}
+
+/* ── SESSION LOGGER MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:16px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:24px}
+.modal h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.04em;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--s2);border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:50%;font-size:14px;display:flex;align-items:center;justify-content:center}
+
+.form-group{margin-bottom:14px}
+.form-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
+.form-input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-size:13px;transition:border-color .2s}
+.form-input:focus{outline:none;border-color:var(--accent)}
+.form-textarea{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-size:13px;resize:vertical;min-height:70px;transition:border-color .2s}
+.form-textarea:focus{outline:none;border-color:var(--accent)}
+
+/* Rating stars */
+.rating-wrap{display:flex;gap:6px;margin-top:4px}
+.rating-star{font-size:22px;cursor:pointer;color:var(--muted);transition:color .15s;user-select:none}
+.rating-star:hover,.rating-star.on{color:var(--gold)}
+
+/* Exercise rows */
+.ex-row{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.ex-row-name{font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.ex-row-name span{font-family:'DM Mono',monospace;font-size:9px;color:var(--gym);background:rgba(167,139,250,.1);padding:2px 6px;border-radius:3px}
+.ex-sets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ex-set{display:flex;flex-direction:column;gap:3px}
+.ex-set-label{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace}
+.ex-set-input{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:5px 8px;color:var(--text);font-size:12px;width:100%;text-align:center}
+.ex-set-input:focus{outline:none;border-color:var(--gym)}
+
+.btn-primary{background:var(--accent);color:var(--bg);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.08em;padding:11px 24px;border:none;border-radius:8px;transition:opacity .2s;width:100%;margin-top:8px}
+.btn-primary:hover{opacity:.85}
+.btn-secondary{background:var(--s2);color:var(--muted);border:1px solid var(--border);font-size:12px;padding:8px 16px;border-radius:7px;margin-top:8px;width:100%}
+
+/* ── GYM TRACKER ── */
+.gym-history-grid{display:grid;gap:10px}
+.hist-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.hist-head{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;background:rgba(167,139,250,.06)}
+.hist-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--gym)}
+.hist-type{font-size:12px;font-weight:600}
+.hist-rating{display:flex;gap:2px}
+.hist-body{padding:10px 14px}
+.hist-exs{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;margin-bottom:8px}
+.hist-ex{background:var(--s2);border-radius:6px;padding:7px 10px;font-size:11px}
+.hist-ex-name{font-weight:600;margin-bottom:2px}
+.hist-ex-sets{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)}
+.hist-note{font-size:11px;color:var(--muted);padding:8px 10px;background:var(--s2);border-radius:6px;margin-top:4px;font-style:italic}
+
+/* Progress comparison */
+.perf-chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:12px}
+.perf-ex-card{background:var(--s1);border:1px solid var(--border);border-radius:9px;padding:12px}
+.perf-ex-name{font-size:11px;font-weight:600;margin-bottom:8px;color:var(--gym)}
+.perf-line{display:flex;align-items:center;gap:6px;font-size:10px;margin-bottom:3px}
+.perf-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.perf-txt{flex:1;color:var(--muted)}
+.perf-val{font-family:'DM Mono',monospace;font-size:10px;color:var(--text)}
+
+/* ── NUTRITION ── */
+.nutri-layout{display:grid;grid-template-columns:1fr 380px;gap:20px}
+.nutri-chat{display:flex;flex-direction:column;height:calc(100vh - 220px);min-height:500px}
+.chat-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px;scrollbar-width:thin}
+.msg{max-width:85%;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.6}
+.msg-user{background:rgba(232,255,71,.1);border:1px solid rgba(232,255,71,.2);color:var(--text);align-self:flex-end;border-bottom-right-radius:3px}
+.msg-ai{background:var(--s2);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-bottom-left-radius:3px}
+.msg-ai strong{color:var(--accent)}
+.msg-loading{color:var(--muted);font-style:italic;font-size:12px}
+.chat-input-wrap{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.chat-input{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;resize:none;min-height:48px;max-height:120px}
+.chat-input:focus{outline:none;border-color:var(--accent)}
+.btn-send{background:var(--accent);border:none;border-radius:8px;padding:10px 18px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.06em;color:var(--bg);flex-shrink:0;align-self:flex-end}
+.btn-send:disabled{opacity:.4;cursor:default}
+
+/* Nutrition sidebar */
+.nutri-side{display:flex;flex-direction:column;gap:14px}
+.nutri-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:16px}
+.nutri-card h3{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;margin-bottom:12px}
+
+/* Macros ring */
+.macro-rings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.macro-ring{background:var(--s2);border-radius:8px;padding:10px;text-align:center}
+.macro-ring-val{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.03em}
+.macro-ring-label{font-size:9px;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.macro-bar{height:4px;border-radius:2px;margin-top:6px;overflow:hidden;background:var(--s3)}
+.macro-fill{height:100%;border-radius:2px;transition:width .5s}
+
+/* Weight tracker */
+.weight-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.weight-log{display:flex;flex-direction:column;gap:4px;max-height:150px;overflow-y:auto}
+.weight-entry{display:flex;justify-content:space-between;padding:5px 8px;background:var(--s2);border-radius:5px;font-size:11px}
+.weight-entry-date{color:var(--muted);font-family:'DM Mono',monospace;font-size:9px}
+.weight-entry-val{font-weight:600;color:var(--accent)}
+
+/* Quick food buttons */
+.quick-foods{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.quick-food-btn{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:4px 10px;font-size:10px;color:var(--muted);transition:all .15s}
+.quick-food-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── UTILS ── */
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:16px;color:var(--text)}
+.pill{font-size:9px;font-family:'DM Mono',monospace;letter-spacing:.08em;padding:2px 7px;border-radius:3px;border:1px solid;text-transform:uppercase}
+.pill-gym{color:var(--gym);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08)}
+.pill-run{color:var(--blue);border-color:rgba(71,197,255,.3);background:rgba(71,197,255,.06)}
+.pill-trail{color:var(--green);border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.06)}
+.tag-new{font-family:'DM Mono',monospace;font-size:8px;color:var(--accent);background:rgba(232,255,71,.12);border:1px solid rgba(232,255,71,.3);padding:1px 6px;border-radius:3px;vertical-align:middle;margin-left:6px}
+.empty-state{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+.empty-state .big{font-size:32px;margin-bottom:8px}
+
+@media(max-width:900px){
+  .day-grid{grid-template-columns:repeat(4,1fr)}
+  .nutri-layout{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .hero,.content{padding:20px 16px}
+  .tabs-wrap{padding:0 12px}
+  .day-grid{grid-template-columns:repeat(2,1fr)}
+  .dash-row{grid-template-columns:1fr}
+}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Coach Complet · Course + Salle + Nutrition</div>
+  <h1>ROME <span>2026</span></h1>
+  <div class="hero-meta">
+    <div class="meta-pill"><span class="dot" style="background:var(--accent)"></span>Objectif <strong>1h45'00"</strong></div>
+    <div class="meta-pill"><span class="dot" style="background:var(--orange)"></span>18 Oct 2026</div>
+    <div class="meta-pill"><span class="dot" style="background:var(--gym)"></span>Course + Salle + Nutrition IA</div>
+    <div class="meta-pill"><span class="dot" style="background:var(--green)"></span>Suivi complet des séances</div>
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <button class="tab-btn active" style="--pc:#e8ff47" onclick="switchTab(0)"><span class="pdot" style="background:#e8ff47"></span>Dashboard</button>
+  <button class="tab-btn" style="--pc:var(--p1)" onclick="switchTab(1)"><span class="pdot" style="background:var(--p1)"></span>Planning</button>
+  <button class="tab-btn" style="--pc:var(--gym)" onclick="switchTab(2)"><span class="pdot" style="background:var(--gym)"></span>Suivi Salle</button>
+  <button class="tab-btn" style="--pc:var(--green)" onclick="switchTab(3)" id="tab-nutri"><span class="pdot" style="background:var(--green)"></span>Nutrition IA</button>
+</div>
+
+<div class="content">
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="panel active" id="panel-0">
+  <div class="dash-grid">
+    <div class="stat-card" style="--sc:var(--accent)">
+      <div class="stat-label">Séances réalisées</div>
+      <div class="stat-val" id="d-done">0</div>
+      <div class="stat-unit">sur <span id="d-total">0</span> planifiées</div>
+    </div>
+    <div class="stat-card" style="--sc:var(--blue)">
+      <div class="stat-label">Phase actuelle</div>
+      <div class="stat-val" style="font-size:22px" id="d-phase">–</div>
+      <div class="stat-unit" id="d-phase-sub">Semaine en cours</div>
+    </div>
+    <div class="stat-card" style="--sc:var(--gym)">
+      <div class="stat-label">Poids actuel</div>
+      <div class="stat-val" id="d-weight">60</div>
+      <div class="stat-unit">kg <span class="stat-trend" id="d-weight-trend"></span></div>
+    </div>
+    <div class="stat-card" style="--sc:var(--green)">
+      <div class="stat-label">Ressenti moyen</div>
+      <div class="stat-val" id="d-rating">–</div>
+      <div class="stat-unit">/ 10 sur les 7 derniers jours</div>
+    </div>
+  </div>
+
+  <!-- Progress bars -->
+  <div class="dash-row">
+    <div class="dash-card">
+      <h3>PROGRESSION DU PROGRAMME</h3>
+      <div class="prog-bars">
+        <div class="prog-row">
+          <div class="prog-label">PHASE 1</div>
+          <div class="prog-bar-wrap"><div class="prog-bar" id="pb1" style="width:0%;background:var(--p1)"></div></div>
+          <div class="prog-pct" id="pt1">0%</div>
+        </div>
+        <div class="prog-row">
+          <div class="prog-label">PHASE 2</div>
+          <div class="prog-bar-wrap"><div class="prog-bar" id="pb2" style="width:0%;background:var(--p2)"></div></div>
+          <div class="prog-pct" id="pt2">0%</div>
+        </div>
+        <div class="prog-row">
+          <div class="prog-label">PHASE 3</div>
+          <div class="prog-bar-wrap"><div class="prog-bar" id="pb3" style="width:0%;background:var(--p3)"></div></div>
+          <div class="prog-pct" id="pt3">0%</div>
+        </div>
+        <div class="prog-row">
+          <div class="prog-label">PHASE 4</div>
+          <div class="prog-bar-wrap"><div class="prog-bar" id="pb4" style="width:0%;background:var(--p4)"></div></div>
+          <div class="prog-pct" id="pt4">0%</div>
+        </div>
+        <div class="prog-row" style="margin-top:6px">
+          <div class="prog-label">TOTAL</div>
+          <div class="prog-bar-wrap"><div class="prog-bar" id="pb-total" style="width:0%;background:var(--accent)"></div></div>
+          <div class="prog-pct" id="pt-total">0%</div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-card">
+      <h3>SÉANCES RÉCENTES</h3>
+      <div id="recent-sessions">
+        <div class="empty-state"><div class="big">🏃‍♀️</div>Aucune séance enregistrée.<br>Commence par cocher tes premières séances !</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-tip" id="ai-dash-tip">
+    <div class="ai-tip-header">🤖 Conseil IA</div>
+    <p id="ai-tip-text">Enregistre tes premières séances pour recevoir des conseils personnalisés basés sur ton ressenti et ton évolution.</p>
+  </div>
+
+  <!-- Weight quick log -->
+  <div class="dash-card" style="margin-top:0">
+    <h3>POIDS CORPOREL</h3>
+    <div class="weight-inputs">
+      <div>
+        <div class="form-label" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.15em;display:block;margin-bottom:5px">NOUVEAU POIDS (KG)</div>
+        <input type="number" id="weight-input" class="form-input" placeholder="60.0" step="0.1" min="40" max="120">
+      </div>
+      <div>
+        <div class="form-label" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.15em;display:block;margin-bottom:5px">DATE</div>
+        <input type="date" id="weight-date" class="form-input">
+      </div>
+    </div>
+    <button class="btn-primary" style="margin-top:0" onclick="logWeight()">ENREGISTRER LE POIDS</button>
+    <div class="weight-log" id="weight-log" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- ═══ PLANNING ═══ -->
+<div class="panel" id="panel-1">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <div class="section-title">PLANNING SEMAINE PAR SEMAINE</div>
+    <div style="display:flex;gap:8px;align-items:center;font-size:11px;color:var(--muted)">
+      <span style="width:10px;height:10px;background:var(--green);border-radius:50%;display:inline-block"></span>Réalisée
+      <span style="width:10px;height:10px;background:var(--red);border-radius:50%;display:inline-block;margin-left:4px"></span>Passée
+      <span style="width:10px;height:10px;background:var(--border);border-radius:50%;display:inline-block;margin-left:4px"></span>À venir
+    </div>
+  </div>
+  <div id="planning-container"></div>
+</div>
+
+<!-- ═══ SUIVI SALLE ═══ -->
+<div class="panel" id="panel-2">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+    <div class="section-title">SUIVI SÉANCES SALLE</div>
+    <button class="btn-primary" style="width:auto;padding:9px 20px;font-size:13px" onclick="openGymLogger()">+ NOUVELLE SÉANCE</button>
+  </div>
+
+  <!-- Evolution des perfs -->
+  <div class="dash-card" style="margin-bottom:20px">
+    <h3>ÉVOLUTION DES CHARGES</h3>
+    <div id="perf-chart" class="perf-chart">
+      <div class="empty-state"><div class="big">💪</div>Enregistre tes séances pour voir<br>l'évolution de tes charges.</div>
+    </div>
+  </div>
+
+  <!-- Historique -->
+  <div class="section-title" style="font-size:18px">HISTORIQUE DES SÉANCES</div>
+  <div id="gym-history">
+    <div class="empty-state"><div class="big">🏋️‍♀️</div>Aucune séance enregistrée.<br>Clique sur "+ Nouvelle séance" pour commencer.</div>
+  </div>
+</div>
+
+<!-- ═══ NUTRITION IA ═══ -->
+<div class="panel" id="panel-3">
+  <div class="nutri-layout">
+    <!-- CHAT -->
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="section-title" style="margin:0">COACH NUTRITION IA</div>
+        <button onclick="clearNutriChat()" style="background:var(--s2);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:5px 12px;border-radius:6px">Effacer</button>
+      </div>
+      <div class="quick-foods">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;width:100%;margin-bottom:2px">SUGGESTIONS RAPIDES</div>
+        <button class="quick-food-btn" onclick="quickMsg('Analyse mes macros pour aujourd\'hui')">📊 Mes macros du jour</button>
+        <button class="quick-food-btn" onclick="quickMsg('Que manger avant une sortie longue ?')">🏃 Avant sortie longue</button>
+        <button class="quick-food-btn" onclick="quickMsg('Que manger après une séance de salle ?')">💪 Après salle</button>
+        <button class="quick-food-btn" onclick="quickMsg('Donne-moi un plan alimentaire pour la semaine')">📅 Plan semaine</button>
+        <button class="quick-food-btn" onclick="quickMsg('Recettes riches en glucides pour l\'entraînement')">🍝 Recettes glucides</button>
+        <button class="quick-food-btn" onclick="quickMsg('Comment optimiser mon alimentation avant Rome ?')">🇮🇹 Avant Rome</button>
+      </div>
+      <div class="nutri-chat">
+        <div class="chat-messages" id="chat-messages">
+          <div class="msg msg-ai">
+            <strong>Coach Nutrition IA 🥗</strong><br><br>
+            Bonjour ! Je suis ton coach nutrition personnalisé pour la préparation du Semi de Rome.<br><br>
+            Je connais ton profil : <strong>27 ans · 60 kg · 168 cm · Femme</strong><br>
+            Objectif : <strong>Semi-marathon 1h45 · 18 octobre 2026</strong><br><br>
+            Dis-moi ce que tu as mangé aujourd'hui, ou pose-moi une question sur ton alimentation. Je peux :<br>
+            • Analyser tes repas et calculer les macros<br>
+            • Te dire s'il manque glucides, protéines ou lipides<br>
+            • Adapter mes conseils à ta phase d'entraînement<br>
+            • Te proposer des recettes adaptées<br>
+            • Ajuster mes recommandations selon ton poids actuel
+          </div>
+        </div>
+        <div class="chat-input-wrap">
+          <textarea class="chat-input" id="chat-input" placeholder="Ex: J'ai mangé des flocons d'avoine au petit déj, une salade poulet au déjeuner..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendNutriMsg()}"></textarea>
+          <button class="btn-send" id="btn-send" onclick="sendNutriMsg()">ENVOYER</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="nutri-side">
+      <!-- Weight card -->
+      <div class="nutri-card">
+        <h3>POIDS & IMC</h3>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--accent)" id="n-weight">60.0</span>
+          <span style="color:var(--muted);font-size:13px">kg</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)" id="n-weight-trend"></span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px">IMC : <strong style="color:var(--text)" id="n-imc">21.3</strong> — Dans la zone optimale</div>
+        <input type="number" id="nutri-weight" class="form-input" placeholder="Nouveau poids (kg)" step="0.1">
+        <button onclick="updateNutriWeight()" style="background:var(--s2);border:1px solid var(--border);color:var(--text);font-size:11px;padding:6px 12px;border-radius:6px;margin-top:6px;width:100%">Mettre à jour</button>
+      </div>
+
+      <!-- Daily macros target -->
+      <div class="nutri-card">
+        <h3>OBJECTIFS MACROS DU JOUR</h3>
+        <div id="macro-phase-label" style="font-size:10px;color:var(--muted);margin-bottom:10px;font-family:'DM Mono',monospace"></div>
+        <div class="macro-rings">
+          <div class="macro-ring">
+            <div class="macro-ring-val" style="color:var(--orange)" id="m-glucides">–</div>
+            <div class="macro-ring-label">Glucides</div>
+            <div class="macro-bar"><div class="macro-fill" id="mb-glucides" style="background:var(--orange);width:0%"></div></div>
+          </div>
+          <div class="macro-ring">
+            <div class="macro-ring-val" style="color:var(--blue)" id="m-proteines">–</div>
+            <div class="macro-ring-label">Protéines</div>
+            <div class="macro-bar"><div class="macro-fill" id="mb-proteines" style="background:var(--blue);width:0%"></div></div>
+          </div>
+          <div class="macro-ring">
+            <div class="macro-ring-val" style="color:var(--green)" id="m-lipides">–</div>
+            <div class="macro-ring-label">Lipides</div>
+            <div class="macro-bar"><div class="macro-fill" id="mb-lipides" style="background:var(--green);width:0%"></div></div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-top:6px">Calories totales estimées : <strong style="color:var(--accent)" id="m-kcal">–</strong> kcal</div>
+        <button onclick="quickMsg('Quels sont mes objectifs nutritionnels exacts pour aujourd\'hui ?')" style="background:var(--s2);border:1px solid var(--border);color:var(--muted);font-size:10px;padding:6px;border-radius:6px;margin-top:10px;width:100%">Détailler mes objectifs →</button>
+      </div>
+
+      <!-- Food log today -->
+      <div class="nutri-card">
+        <h3>REPAS DU JOUR</h3>
+        <div id="food-log-today" style="font-size:12px;color:var(--muted);font-style:italic">Aucun aliment enregistré.<br>Parle à ton coach !</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end content -->
+
+<!-- ═══ SESSION LOG MODAL ═══ -->
+<div class="modal-overlay" id="log-modal">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 id="modal-title">ENREGISTRER LA SÉANCE</h2>
+    <div class="modal-sub" id="modal-sub">Remplis les détails de ta séance</div>
+
+    <div id="modal-body">
+      <!-- Dynamic content -->
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let state = {
+  sessions: {}, // key: "S01_LUN_GYM" → {done, skipped, rating, note, date}
+  gymLogs: [],  // [{date, type, exercises:[{name, sets:[{reps,weight,note}]}], rating, note, feeling}]
+  weights: [],  // [{date, kg}]
+  currentWeight: 60,
+  nutriHistory: [],
+  foodLogToday: [],
+};
+
+function save() { try { localStorage.setItem('rome2026', JSON.stringify(state)); } catch(e){} }
+function load() {
+  try {
+    const d = localStorage.getItem('rome2026');
+    if (d) state = {...state, ...JSON.parse(d)};
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════
+// PROGRAMME DATA
+// ══════════════════════════════════════════════════════════
+const PHASES = [
+  {
+    id:"p1", label:"Phase 1 · Fondation", color:"var(--p1)",
+    weeks:[
+      {num:"S01",title:"Prise de repères",date:"28 Avr – 4 Mai",
+       days:[
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body + Core",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"footing",label:"Footing Reprise",sub:"Pyramide douce",dur:"38 MIN",color:"var(--p1)"},
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s3",label:"Salle S3",sub:"Upper + Cardio",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s1b",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"long50",label:"Sortie Longue",sub:"50 min fondamental",dur:"50 MIN",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S02",title:"Construction de base",date:"5 – 11 Mai",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"intervalles",label:"Intervalles Doux",sub:"3×(6min fond/2min vif)",dur:"40 MIN",color:"var(--p1)"},
+         {type:"gym",key:"s3",label:"Salle S3",sub:"Upper + Cardio",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s2b",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"long55",label:"Sortie Longue",sub:"Terrain varié",dur:"55 MIN",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S03",title:"Endurance + Côtes",date:"12 – 18 Mai",
+       days:[
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"cotes",label:"Côtes Courtes",sub:"5× montée 80-150m",dur:"42 MIN",color:"var(--orange)"},
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Upper (sans fentes)",dur:"~50min",color:"var(--gym)"},
+         {type:"gym",key:"s2b",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"long65",label:"Sortie Longue+",sub:"50 min + accél",dur:"1H05",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S04",title:"Relâche — Fartlek",date:"19 – 25 Mai",
+       days:[
+         {type:"gym",key:"s3",label:"Salle S3",sub:"Upper + Cardio",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"fartlek",label:"Fartlek Libre",sub:"Semaine relâche",dur:"38 MIN",color:"var(--p1)"},
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s3b",label:"Salle S3",sub:"Upper + Cardio",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"trail60",label:"Trail Découverte",sub:"60 min terrain",dur:"1H00",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S05",title:"Montée en volume",date:"26 Mai – 1 Juin",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"coteslg",label:"Côtes Longues",sub:"6× 200-300m 8/10",dur:"45 MIN",color:"var(--orange)"},
+         {type:"gym",key:"s3",label:"Salle S3",sub:"Upper + Cardio",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s2b",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"prog75",label:"Sortie Progressive",sub:"30+30+10 min",dur:"1H15",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S06",title:"Endurance confirmée",date:"2 – 8 Juin",
+       days:[
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"tempo",label:"Blocs Tempo",sub:"4×(5min fond/3min vif)",dur:"48 MIN",color:"var(--p1)"},
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",color:"var(--gym)"},
+         {type:"gym",key:"s1b",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"longcible",label:"Long + Allure Cible",sub:"55min + 10min 5'00\"",dur:"1H15",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S07",title:"Pic de volume Phase 1",date:"9 – 15 Juin",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"strides",label:"Footing + Strides",sub:"30min + 5×20sec",dur:"50 MIN",color:"var(--p1)"},
+         {type:"gym",key:"s3",label:"Salle S3",sub:"Upper + Cardio",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s2b",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"trail85",label:"Trail Dénivelé",sub:"1h15 ~6/10",dur:"1H25",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S08",title:"Bilan — Test 5 km",date:"16 – 22 Juin",
+       days:[
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"leger",label:"Footing Léger",sub:"Préparation test",dur:"40 MIN",color:"var(--p1)"},
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s3",label:"Salle S3",sub:"Upper + Cardio",dur:"~60min",color:"var(--gym)"},
+         {type:"gym",key:"s2b",label:"Salle S2 ↘",sub:"Léger avant test",dur:"~45min",color:"var(--gym)"},
+         {type:"run",key:"test5k",label:"⚡ TEST 5 km",sub:"Bilan Phase 1",dur:"~38 MIN",color:"var(--gold)"},
+         {type:"rest"}
+       ]},
+    ]
+  },
+  {
+    id:"p2", label:"Phase 2 · Développement", color:"var(--p2)",
+    weeks:[
+      {num:"S09",title:"Premier VMA",date:"23 – 29 Juin",
+       days:[
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"vma6",label:"⚡ VMA 6×2min",sub:"4'30-4'40\"/km",dur:"45 MIN",color:"var(--p2)"},
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"recup35",label:"Récup Active",sub:"Footing très lent",dur:"35 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Upper (sans fentes)",dur:"~50min",color:"var(--gym)"},
+         {type:"run",key:"longcible",label:"Long + Allure",sub:"55min + 20min 5'00\"",dur:"1H25",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S10",title:"VMA renforcé + Côtes",date:"30 Juin – 6 Juil",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"vma8",label:"⚡ VMA 8×2min",sub:"4'30\"/km",dur:"48 MIN",color:"var(--p2)"},
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"recup38",label:"Récup + Strides",sub:"Footing doux",dur:"38 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",color:"var(--gym)"},
+         {type:"run",key:"coteslong",label:"Côtes Longues",sub:"8× 200m + footing",dur:"1H10",color:"var(--orange)"},
+         {type:"rest"}
+       ]},
+      {num:"S11",title:"Répétitions 3 min",date:"7 – 13 Juil",
+       days:[
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"vma3m",label:"⚡ VMA 6×3min",sub:"4'40\"/km",dur:"50 MIN",color:"var(--p2)"},
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"recuptrail",label:"Trail Récup",sub:"35-40min doux",dur:"40 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",color:"var(--gym)"},
+         {type:"run",key:"doublebloc",label:"Long Double Bloc",sub:"45min + 2×15min 5'00\"",dur:"1H35",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S12",title:"Semaine de relâche",date:"14 – 20 Juil",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"fartlek",label:"Fartlek Structuré",sub:"2min vif / 3min fond",dur:"42 MIN",color:"var(--p1)"},
+         {type:"gym",key:"s3",label:"Salle S3",sub:"Upper + Cardio",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"marche",label:"Marche Active",sub:"Récup légère",dur:"30 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"trailplaisir",label:"Trail Plaisir",sub:"1h15 ~6/10",dur:"1H15",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S13",title:"Premier Seuil",date:"21 – 27 Juil",
+       days:[
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"seuil1",label:"🔴 Premier Seuil",sub:"4×6min 4'45-4'50\"",dur:"52 MIN",color:"var(--pink)"},
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"recuptech",label:"Récup + Technique",sub:"Éducatifs",dur:"38 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",color:"var(--gym)"},
+         {type:"run",key:"doublebloc",label:"Long Blocs Cible",sub:"40min + 3×10min 5'00\"",dur:"1H40",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S14",title:"Seuil renforcé",date:"28 Juil – 3 Août",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"seuil2",label:"🔴 Seuil 3×8min",sub:"4'45\"/km",dur:"55 MIN",color:"var(--pink)"},
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"recup35",label:"Récup Active",sub:"Footing lent",dur:"35 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",color:"var(--gym)"},
+         {type:"run",key:"cotessprint",label:"Côtes Sprint + Long",sub:"10× sprint + 35min",dur:"1H20",color:"var(--orange)"},
+         {type:"rest"}
+       ]},
+      {num:"S15",title:"Pic intensité Phase 2",date:"4 – 10 Août",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"seuillong",label:"🔴 Seuil 20min",sub:"Continu + 10min",dur:"55 MIN",color:"var(--pink)"},
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"recuptrail",label:"Trail Récup",sub:"Terrain mou",dur:"40 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",color:"var(--gym)"},
+         {type:"run",key:"traildeport",label:"Trail D+ 1h45",sub:"250-400m dénivelé",dur:"1H45",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S16",title:"Test 10 km",date:"11 – 17 Août",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"leger",label:"Footing + Strides",sub:"Léger pré-test",dur:"40 MIN",color:"var(--p1)"},
+         {type:"gym",key:"s3",label:"Salle S3",sub:"Upper + Cardio",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"recuplent",label:"Récup Ultra-Lent",sub:"Préparer le test",dur:"30 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s1lite",label:"Salle S1 ↘",sub:"Léger avant test",dur:"~45min",color:"var(--gym)"},
+         {type:"run",key:"test10k",label:"⚡ TEST 10 km",sub:"Objectif ~55min",dur:"~60 MIN",color:"var(--gold)"},
+         {type:"rest"}
+       ]},
+    ]
+  },
+  {
+    id:"p3", label:"Phase 3 · Spécifique", color:"var(--p3)",
+    weeks:[
+      {num:"S17",title:"Entrée zone spécifique",date:"18 – 24 Août",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"3x15",label:"🎯 3×15min Allure",sub:"5'00\"/km",dur:"55 MIN",color:"var(--p3)"},
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"soutien",label:"Soutien Allure",sub:"3×3min 5'00\"",dur:"42 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",color:"var(--gym)"},
+         {type:"run",key:"volmax",label:"Long Max 1h50",sub:"50min + 40min 5'00\"",dur:"1H50",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S18",title:"Consolidation allure",date:"25 – 31 Août",
+       days:[
+         {type:"gym",key:"s1",label:"Salle S1",sub:"Lower Body",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"comboseuil",label:"🔴 Seuil + Allure",sub:"2×8min + 2×8min",dur:"55 MIN",color:"var(--pink)"},
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"trailrecup",label:"Trail Récup",sub:"35-40min doux",dur:"40 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Upper léger",dur:"~50min",color:"var(--gym)"},
+         {type:"run",key:"longsim",label:"Longue Simulation",sub:"45min + 50min 5'00\"",dur:"1H45",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S19",title:"Séance cœur de cible",date:"1 – 7 Sep",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"2x25",label:"🎯 2×25min Allure",sub:"50min total 5'00\"",dur:"1H05",color:"var(--p3)"},
+         {type:"gym",key:"s1lite",label:"Salle S1 ↘ -15%",sub:"Charges allégées",dur:"~50min",color:"var(--gym)"},
+         {type:"run",key:"rappels",label:"Rappels Allure",sub:"4×2min 5'00\"",dur:"40 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Upper léger",dur:"~45min",color:"var(--gym)"},
+         {type:"run",key:"coteslong2",label:"Côtes + Long",sub:"6× + 40min fond",dur:"1H30",color:"var(--orange)"},
+         {type:"rest"}
+       ]},
+      {num:"S20",title:"Semaine de relâche",date:"8 – 14 Sep",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"relache",label:"Footing Doux",sub:"Semaine relâche",dur:"40 MIN",color:"var(--p1)"},
+         {type:"gym",key:"s3",label:"Salle S3",sub:"Upper + Cardio",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"mobilite",label:"Mobilité + Marche",sub:"30 min",dur:"30 MIN",color:"var(--teal)"},
+         {type:"rest"},
+         {type:"run",key:"trailplaisir",label:"Trail Plaisir",sub:"1h15 effort libre",dur:"1H15",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+      {num:"S21",title:"Séance référence + Test",date:"15 – 21 Sep",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"40min",label:"🎯 40min Continu",sub:"5'00\"/km non-stop",dur:"1H00",color:"var(--p3)"},
+         {type:"gym",key:"s1lite",label:"Salle S1 ↘ -15%",sub:"Charges allégées",dur:"~50min",color:"var(--gym)"},
+         {type:"run",key:"recuptest",label:"Récup Pré-test",sub:"Ultra-lent",dur:"30 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Très léger",dur:"~40min",color:"var(--gym)"},
+         {type:"run",key:"test10kallure",label:"⚡ Test 10km Allure",sub:"Objectif 50min",dur:"~55 MIN",color:"var(--gold)"},
+         {type:"rest"}
+       ]},
+      {num:"S22",title:"Dernière semaine intense",date:"22 – 28 Sep",
+       days:[
+         {type:"gym",key:"s2",label:"Salle S2",sub:"Dos + Fessiers",dur:"~60min",color:"var(--gym)"},
+         {type:"run",key:"verif",label:"🎯 Vérif 30min",sub:"+ 3×30sec 4'30\"",dur:"55 MIN",color:"var(--p3)"},
+         {type:"gym",key:"s1lite",label:"Salle S1 ↘",sub:"Charges allégées",dur:"~50min",color:"var(--gym)"},
+         {type:"run",key:"lasttrail",label:"Last Trail",sub:"30-35min doux",dur:"35 MIN",color:"var(--teal)"},
+         {type:"gym",key:"s3lite",label:"Salle S3 ↘",sub:"Upper léger",dur:"~40min",color:"var(--gym)"},
+         {type:"run",key:"longfinal",label:"Longue Finale",sub:"40min + 30min 5'00\"",dur:"1H20",color:"var(--green)"},
+         {type:"rest"}
+       ]},
+    ]
+  },
+  {
+    id:"p4", label:"Phase 4 · Affûtage", color:"var(--p4)",
+    weeks:[
+      {num:"S23",title:"Début affûtage — J-19",date:"29 Sep – 5 Oct",
+       days:[
+         {type:"gym",key:"upper",label:"Salle Upper ↘↘",sub:"Très léger",dur:"~35min",color:"var(--gym)"},
+         {type:"run",key:"p4frac",label:"Fractionné Allégé",sub:"4×3min ~4'55\"",dur:"45 MIN",color:"var(--p4)"},
+         {type:"gym",key:"s2light",label:"Salle S2 ↘↘",sub:"Upper + fessiers léger",dur:"~40min",color:"var(--gym)"},
+         {type:"rest"},
+         {type:"rest"},
+         {type:"run",key:"p4touch",label:"Footing + Touche",sub:"40min + 10min 5'00\"",dur:"55 MIN",color:"var(--p4)"},
+         {type:"rest"}
+       ]},
+      {num:"S24",title:"Semaine pré-Rome — J-12",date:"6 – 12 Oct",
+       days:[
+         {type:"gym",key:"upper",label:"Salle Upper ↘↘",sub:"Très léger",dur:"~30min",color:"var(--gym)"},
+         {type:"run",key:"p4leger",label:"Footing Léger",sub:"22min + accél",dur:"35 MIN",color:"var(--p4)"},
+         {type:"rest"},
+         {type:"run",key:"p4activ",label:"Activation Finale",sub:"15min + 2×3min",dur:"25 MIN",color:"var(--p4)"},
+         {type:"rest"},
+         {type:"rest"},
+         {type:"rest"}
+       ]},
+      {num:"J-2",title:"Veille de veille — 16 Oct",date:"J-2 avant Rome",
+       days:[
+         {type:"rest"},{type:"rest"},{type:"rest"},
+         {type:"run",key:"p4j2",label:"Activation Ultra-Douce",sub:"15min très léger",dur:"15 MIN",color:"var(--p4)"},
+         {type:"rest"},{type:"rest"},{type:"rest"}
+       ]},
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════════════════
+// PLANNING RENDER
+// ══════════════════════════════════════════════════════════
+const DAYS_LABELS = ["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
+
+function getSessId(weekNum, dayIdx) { return `${weekNum}_${dayIdx}`; }
+
+function renderPlanning() {
+  const container = document.getElementById('planning-container');
+  let html = '';
+  PHASES.forEach(phase => {
+    phase.weeks.forEach(week => {
+      const totalSess = week.days.filter(d=>d.type!=='rest').length;
+      const doneSess = week.days.filter((d,i) => {
+        if(d.type==='rest') return false;
+        const s = state.sessions[getSessId(week.num,i)];
+        return s && s.done;
+      }).length;
+      const pct = totalSess ? Math.round(doneSess/totalSess*100) : 0;
+
+      const daysHtml = DAYS_LABELS.map((day,i) => {
+        const slot = week.days[i];
+        const sessId = getSessId(week.num, i);
+        const sessState = state.sessions[sessId] || {};
+
+        if (!slot || slot.type === 'rest') {
+          return `<div class="day-col"><div class="day-label-h">${day}</div><div class="day-rest">REPOS</div></div>`;
+        }
+
+        const doneClass = sessState.done ? 'done' : sessState.skipped ? 'skipped' : '';
+        const ratingHtml = sessState.rating
+          ? `<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);margin-top:2px">${'★'.repeat(Math.round(sessState.rating/2))}${'☆'.repeat(5-Math.round(sessState.rating/2))}</div>`
+          : '';
+
+        const isGym = slot.type === 'gym';
+        const actionBtns = sessState.done ? 
+          `<div class="ds-actions"><span style="font-size:9px;color:var(--green);font-family:'DM Mono',monospace">✓ RÉALISÉE</span></div>` :
+          sessState.skipped ?
+          `<div class="ds-actions"><span style="font-size:9px;color:var(--red);font-family:'DM Mono',monospace">✗ PASSÉE</span></div>` :
+          `<div class="ds-actions">
+            <button class="btn-done" onclick="markDone('${week.num}',${i},'${slot.type}','${slot.label}')">✓</button>
+            <button class="btn-skip" onclick="markSkipped('${week.num}',${i})">✗</button>
+            ${isGym ? `<button class="btn-log" onclick="openLogFromPlanning('${week.num}',${i},'${slot.key||''}','${slot.label}')">📝</button>` : ''}
+          </div>`;
+
+        return `<div class="day-col">
+          <div class="day-label-h">${day}</div>
+          <div class="day-sess ${doneClass}" style="background:var(--s2)">
+            <div class="ds-head" style="background:${slot.color}22;border-left:3px solid ${slot.color}">
+              <div class="ds-type" style="color:${slot.color}">${slot.label}</div>
+              <div class="ds-dur" style="color:${slot.color}">${slot.dur||''}</div>
+            </div>
+            <div class="ds-name">${slot.sub}</div>
+            ${ratingHtml}
+            ${actionBtns}
+          </div>
+        </div>`;
+      }).join('');
+
+      html += `<div class="week-card" id="week-${week.num}">
+        <div class="week-header" onclick="toggleWeekCard('${week.num}')">
+          <div class="week-num" style="color:${phase.color}">${week.num}</div>
+          <div class="week-info">
+            <div class="week-title">${week.title}</div>
+            <div class="week-sub">${week.date} · ${phase.label}</div>
+          </div>
+          <div class="week-prog">
+            <div class="week-prog-bar"><div class="week-prog-fill" style="width:${pct}%"></div></div>
+            <div class="week-prog-txt">${doneSess}/${totalSess}</div>
+          </div>
+          <div class="toggle-i">▾</div>
+        </div>
+        <div class="week-body">
+          <div class="day-grid">${daysHtml}</div>
+        </div>
+      </div>`;
+    });
+  });
+  container.innerHTML = html;
+}
+
+function toggleWeekCard(num) {
+  const card = document.getElementById('week-'+num);
+  if(card) card.classList.toggle('open');
+}
+
+function markDone(weekNum, dayIdx, type, label) {
+  const id = getSessId(weekNum, dayIdx);
+  const now = new Date().toLocaleDateString('fr-FR');
+  state.sessions[id] = {done:true, skipped:false, date:now, type, label};
+  save(); renderPlanning(); updateDashboard();
+  // Open rating modal
+  openRatingModal(id, label, type);
+}
+
+function markSkipped(weekNum, dayIdx) {
+  const id = getSessId(weekNum, dayIdx);
+  state.sessions[id] = {done:false, skipped:true, date:new Date().toLocaleDateString('fr-FR')};
+  save(); renderPlanning(); updateDashboard();
+}
+
+// ══════════════════════════════════════════════════════════
+// RATING MODAL
+// ══════════════════════════════════════════════════════════
+let currentRatingId = null;
+let currentRating = 0;
+
+function openRatingModal(sessId, label, type) {
+  currentRatingId = sessId;
+  currentRating = 0;
+  const isGym = type === 'gym';
+  document.getElementById('modal-title').textContent = 'ÉVALUER LA SÉANCE';
+  document.getElementById('modal-sub').textContent = label;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-group">
+      <label class="form-label">RESSENTI (1 = très difficile, 10 = parfait)</label>
+      <div class="rating-wrap" id="rating-stars">
+        ${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span class="rating-star" onclick="setRating(${n})" data-v="${n}">★</span>`).join('')}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">NOTE / RESSENTI (optionnel)</label>
+      <textarea class="form-textarea" id="r-note" placeholder="Comment tu t'es sentie ? Douleurs ? Energie ?"></textarea>
+    </div>
+    ${isGym ? `<div class="form-group">
+      <label class="form-label">DURÉE RÉELLE</label>
+      <input type="text" class="form-input" id="r-dur" placeholder="Ex: 65 min">
+    </div>` : `<div class="form-group">
+      <label class="form-label">DISTANCE / TEMPS RÉEL</label>
+      <input type="text" class="form-input" id="r-dur" placeholder="Ex: 8.2 km en 42min30">
+    </div>`}
+    <button class="btn-primary" onclick="saveRating()">ENREGISTRER</button>
+  `;
+  document.getElementById('log-modal').classList.add('open');
+}
+
+function setRating(v) {
+  currentRating = v;
+  document.querySelectorAll('.rating-star').forEach(s => {
+    s.classList.toggle('on', parseInt(s.dataset.v) <= v);
+  });
+}
+
+function saveRating() {
+  if(!currentRatingId) return;
+  const note = document.getElementById('r-note')?.value || '';
+  const dur = document.getElementById('r-dur')?.value || '';
+  state.sessions[currentRatingId] = {...(state.sessions[currentRatingId]||{}), rating:currentRating, note, actualDur:dur};
+  save(); renderPlanning(); updateDashboard(); closeModal();
+}
+
+// ══════════════════════════════════════════════════════════
+// GYM LOGGER
+// ══════════════════════════════════════════════════════════
+const GYM_DEFS = {
+  s1: {name:"Séance 1 — Lower Body", exs:["Fentes marchées","Gainage planche","Presse à cuisses","Russian Twist","SDT Roumain","Mollets debout","Leg Curl / Leg Ext."]},
+  s2: {name:"Séance 2 — Dos + Fessiers", exs:["Hip Thrust","Abdos Chandelles","Kick Back","Spiderman Plank","Abducteur/Adducteur","Tirage Barre Penchée","Tractions assistées","Tirage Menton"]},
+  s3: {name:"Séance 3 — Upper Body", exs:["Goblet Squat","Plank Pass Through","Fentes Bulgares","Sit Ups","Chaise","Shoulder Press","Pompes genoux","Triceps Press"]},
+  s3lite: {name:"Séance 3 ↘ — Upper (sans fentes)", exs:["Plank Pass Through","Sit Ups","Chaise","Shoulder Press","Pompes genoux","Triceps Press"]},
+  s1lite: {name:"Séance 1 ↘ — Lower -15%", exs:["Fentes marchées","Presse à cuisses","SDT Roumain","Mollets debout","Leg Curl / Leg Ext."]},
+  s2light: {name:"Séance 2 ↘ — Dos + Fessiers léger", exs:["Hip Thrust","Kick Back","Abducteur/Adducteur","Tirage Barre Penchée","Tractions assistées"]},
+  upper: {name:"Upper Body ↘↘ — Affûtage", exs:["Shoulder Press","Tractions assistées","Pompes genoux","Triceps Press"]},
+};
+let logKey = 's1';
+let logWeek = '';
+
+function openGymLogger(key, weekLabel) {
+  logKey = key || 's1';
+  logWeek = weekLabel || '';
+  const def = GYM_DEFS[logKey] || GYM_DEFS['s1'];
+  document.getElementById('modal-title').textContent = 'SÉANCE SALLE';
+  document.getElementById('modal-sub').textContent = def.name + (logWeek ? ' · ' + logWeek : '');
+
+  const exRows = def.exs.map(ex => `
+    <div class="ex-row">
+      <div class="ex-row-name">${ex} <span>3 séries</span></div>
+      <div class="ex-sets">
+        ${[1,2,3].map(n=>`<div class="ex-set">
+          <div class="ex-set-label">Série ${n}</div>
+          <input class="ex-set-input" placeholder="Reps" data-ex="${ex}" data-set="${n}" data-type="reps">
+          <input class="ex-set-input" placeholder="kg" data-ex="${ex}" data-set="${n}" data-type="weight" style="margin-top:3px">
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="form-group">
+      <label class="form-label">TYPE DE SÉANCE</label>
+      <select class="form-input" id="gym-type-sel" onchange="changeGymType(this.value)">
+        ${Object.entries(GYM_DEFS).map(([k,v])=>`<option value="${k}" ${k===logKey?'selected':''}>${v.name}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">DATE</label>
+      <input type="date" class="form-input" id="gym-date" value="${new Date().toISOString().split('T')[0]}">
+    </div>
+    <div id="gym-ex-rows">${exRows}</div>
+    <div class="form-group" style="margin-top:12px">
+      <label class="form-label">RESSENTI GLOBAL (1–10)</label>
+      <div class="rating-wrap" id="gym-rating-stars">
+        ${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span class="rating-star" onclick="setGymRating(${n})" data-v="${n}">★</span>`).join('')}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">NOTES / OBSERVATIONS</label>
+      <textarea class="form-textarea" id="gym-note" placeholder="Douleurs, énergie, charges faciles ou difficiles, progressions..."></textarea>
+    </div>
+    <button class="btn-primary" onclick="saveGymLog()">ENREGISTRER LA SÉANCE</button>
+  `;
+  document.getElementById('log-modal').classList.add('open');
+}
+
+let gymRating = 0;
+function setGymRating(v) {
+  gymRating = v;
+  document.querySelectorAll('#gym-rating-stars .rating-star').forEach(s => {
+    s.classList.toggle('on', parseInt(s.dataset.v) <= v);
+  });
+}
+
+function changeGymType(k) {
+  logKey = k;
+  const def = GYM_DEFS[k];
+  const exRows = def.exs.map(ex => `
+    <div class="ex-row">
+      <div class="ex-row-name">${ex} <span>3 séries</span></div>
+      <div class="ex-sets">
+        ${[1,2,3].map(n=>`<div class="ex-set">
+          <div class="ex-set-label">Série ${n}</div>
+          <input class="ex-set-input" placeholder="Reps" data-ex="${ex}" data-set="${n}" data-type="reps">
+          <input class="ex-set-input" placeholder="kg" data-ex="${ex}" data-set="${n}" data-type="weight" style="margin-top:3px">
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+  document.getElementById('gym-ex-rows').innerHTML = exRows;
+}
+
+function saveGymLog() {
+  const def = GYM_DEFS[logKey];
+  const date = document.getElementById('gym-date').value;
+  const note = document.getElementById('gym-note').value;
+  const exercises = {};
+  document.querySelectorAll('#gym-ex-rows .ex-set-input').forEach(inp => {
+    const ex = inp.dataset.ex;
+    const set = inp.dataset.set;
+    const type = inp.dataset.type;
+    if (!exercises[ex]) exercises[ex] = {};
+    if (!exercises[ex][set]) exercises[ex][set] = {};
+    exercises[ex][set][type] = inp.value;
+  });
+  const exArray = Object.entries(exercises).map(([name, sets]) => ({
+    name, sets: Object.values(sets)
+  }));
+  state.gymLogs.push({date, type:logKey, name:def.name, exercises:exArray, rating:gymRating, note});
+  gymRating = 0;
+  save(); closeModal(); renderGymHistory(); renderPerfChart(); updateDashboard();
+}
+
+function openLogFromPlanning(weekNum, dayIdx, key, label) {
+  openGymLogger(key, `${weekNum}`);
+}
+
+// ══════════════════════════════════════════════════════════
+// GYM HISTORY RENDER
+// ══════════════════════════════════════════════════════════
+function renderGymHistory() {
+  const container = document.getElementById('gym-history');
+  if (!state.gymLogs.length) {
+    container.innerHTML = '<div class="empty-state"><div class="big">🏋️‍♀️</div>Aucune séance enregistrée.</div>';
+    return;
+  }
+  const sorted = [...state.gymLogs].sort((a,b) => new Date(b.date)-new Date(a.date));
+  container.innerHTML = sorted.map((log,i) => {
+    const stars = log.rating ? '★'.repeat(log.rating) + '☆'.repeat(10-log.rating) : '';
+    const exHtml = log.exercises.map(ex => {
+      const setsStr = ex.sets.map(s => `${s.reps||'?'} reps${s.weight?` @ ${s.weight}kg`:''}`).join(' · ');
+      return `<div class="hist-ex"><div class="hist-ex-name">${ex.name}</div><div class="hist-ex-sets">${setsStr}</div></div>`;
+    }).join('');
+    return `<div class="hist-card">
+      <div class="hist-head">
+        <div><div class="hist-date">${log.date}</div><div class="hist-type">${log.name}</div></div>
+        <div style="text-align:right">
+          <div class="hist-rating" style="color:var(--gold);font-size:11px;justify-content:flex-end;display:flex">${stars}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px">${log.rating||0}/10</div>
+        </div>
+      </div>
+      <div class="hist-body">
+        <div class="hist-exs">${exHtml}</div>
+        ${log.note ? `<div class="hist-note">"${log.note}"</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderPerfChart() {
+  const container = document.getElementById('perf-chart');
+  if(!state.gymLogs.length) {
+    container.innerHTML = '<div class="empty-state"><div class="big">💪</div>Enregistre tes séances pour voir<br>l\'évolution de tes charges.</div>';
+    return;
+  }
+  // Track max weight per exercise
+  const perf = {};
+  state.gymLogs.forEach(log => {
+    log.exercises.forEach(ex => {
+      ex.sets.forEach(set => {
+        const w = parseFloat(set.weight);
+        if(!isNaN(w) && w > 0) {
+          if(!perf[ex.name]) perf[ex.name] = [];
+          perf[ex.name].push({date:log.date, w});
+        }
+      });
+    });
+  });
+  if(!Object.keys(perf).length) {
+    container.innerHTML = '<div class="empty-state">Remplis les poids pour voir l\'évolution !</div>';
+    return;
+  }
+  container.innerHTML = Object.entries(perf).map(([name, entries]) => {
+    const sorted = entries.sort((a,b)=>new Date(a.date)-new Date(b.date));
+    const first = sorted[0].w;
+    const last = sorted[sorted.length-1].w;
+    const diff = last - first;
+    const trend = diff > 0 ? `<span style="color:var(--green)">+${diff.toFixed(1)}kg ↑</span>` 
+                 : diff < 0 ? `<span style="color:var(--red)">${diff.toFixed(1)}kg ↓</span>` 
+                 : `<span style="color:var(--muted)">stable</span>`;
+    const lines = sorted.slice(-3).map((e,i) => 
+      `<div class="perf-line"><div class="perf-dot" style="background:${i===sorted.length-1?'var(--accent)':'var(--muted)'}"></div><div class="perf-txt">${e.date}</div><div class="perf-val">${e.w}kg</div></div>`
+    ).join('');
+    return `<div class="perf-ex-card">
+      <div class="perf-ex-name">${name}</div>
+      <div style="margin-bottom:6px">${trend}</div>
+      ${lines}
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// WEIGHT LOG
+// ══════════════════════════════════════════════════════════
+function logWeight() {
+  const kg = parseFloat(document.getElementById('weight-input').value);
+  const date = document.getElementById('weight-date').value || new Date().toISOString().split('T')[0];
+  if(isNaN(kg) || kg < 30 || kg > 150) return;
+  state.weights.push({date, kg});
+  state.weights.sort((a,b)=>new Date(a.date)-new Date(b.date));
+  state.currentWeight = kg;
+  save(); renderWeightLog(); updateDashboard(); updateNutriMacros();
+}
+
+function renderWeightLog() {
+  const el = document.getElementById('weight-log');
+  if(!state.weights.length) { el.innerHTML=''; return; }
+  el.innerHTML = state.weights.slice(-8).reverse().map((w,i) => {
+    const prev = state.weights[state.weights.length-1-i-1];
+    const diff = prev ? (w.kg - prev.kg).toFixed(1) : null;
+    const trend = diff===null ? '' : diff > 0 ? `<span style="color:var(--red)">+${diff}kg</span>` : diff < 0 ? `<span style="color:var(--green)">${diff}kg</span>` : '';
+    return `<div class="weight-entry"><div class="weight-entry-date">${w.date}</div><div class="weight-entry-val">${w.kg} kg ${trend}</div></div>`;
+  }).join('');
+  // Update nutrition panel
+  const nw = document.getElementById('n-weight');
+  if(nw) nw.textContent = state.currentWeight.toFixed(1);
+  const imc = (state.currentWeight / (1.68*1.68)).toFixed(1);
+  const nimcEl = document.getElementById('n-imc');
+  if(nimcEl) nimcEl.textContent = imc;
+}
+
+// ══════════════════════════════════════════════════════════
+// NUTRITION IA
+// ══════════════════════════════════════════════════════════
+function updateNutriMacros() {
+  // Estimate macros based on current phase + weight
+  const w = state.currentWeight;
+  // Base: ~50 kcal/kg/day for a woman runner
+  const totalSessions = Object.values(state.sessions).filter(s=>s.done).length;
+  const isHeavyWeek = totalSessions % 5 < 2; // rough estimate
+
+  // Endurance athlete macros
+  const glucides = Math.round(w * 5.5);
+  const proteines = Math.round(w * 1.6);
+  const lipides = Math.round(w * 1.2);
+  const kcal = glucides*4 + proteines*4 + lipides*9;
+
+  document.getElementById('m-glucides').textContent = glucides + 'g';
+  document.getElementById('m-proteines').textContent = proteines + 'g';
+  document.getElementById('m-lipides').textContent = lipides + 'g';
+  document.getElementById('m-kcal').textContent = kcal;
+  document.getElementById('macro-phase-label').textContent = `Pour ${w}kg · Jour d'entraînement`;
+}
+
+async function sendNutriMsg() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value = '';
+  addMsg(msg, 'user');
+  const btn = document.getElementById('btn-send');
+  btn.disabled = true;
+
+  const loading = addMsg('En train d\'analyser...', 'ai', true);
+
+  const context = `Tu es un coach nutrition expert pour athlètes d'endurance. 
+Profil de l'athlète : femme, 27 ans, ${state.currentWeight}kg, 168cm.
+Objectif : Semi-marathon Rome le 18 octobre 2026, objectif 1h45.
+Programme : course à pied (2-3 séances/sem) + musculation salle (3-4 séances/sem).
+Phase actuelle d'entraînement : ${getCurrentPhaseLabel()}.
+Historique poids : ${state.weights.slice(-3).map(w=>w.kg+'kg le '+w.date).join(', ') || 'Non renseigné'}.
+Nombre de séances réalisées : ${Object.values(state.sessions).filter(s=>s.done).length}.
+
+Tu dois :
+- Calculer les macronutriments précis (glucides, protéines, lipides, calories) selon la charge d'entraînement
+- Donner des conseils pratiques et adaptés à la phase d'entraînement
+- Proposer des recettes simples et concrètes
+- Détecter les carences et y répondre
+- Adapter tes recommandations au poids actuel
+- Répondre en français, de façon claire et structurée avec des emojis
+- Utiliser du markdown simple (gras, listes) pour la lisibilité`;
+
+  const messages = [
+    {role:'user', content: context + '\n\nQuestion/Information de l\'athlète : ' + msg}
+  ];
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514', max_tokens:1000, messages})
+    });
+    const data = await resp.json();
+    const text = data.content?.map(b=>b.text||'').join('') || 'Désolée, une erreur est survenue.';
+    loading.remove();
+    addMsg(formatNutriMsg(text), 'ai');
+    // Extract food items from message
+    if(msg.toLowerCase().includes('mangé') || msg.toLowerCase().includes('déjeuner') || msg.toLowerCase().includes('dîner') || msg.toLowerCase().includes('petit déj')) {
+      updateFoodLog(msg);
+    }
+  } catch(e) {
+    loading.remove();
+    addMsg('Connexion impossible. Vérifie ta connexion internet et réessaie.', 'ai');
+  }
+  btn.disabled = false;
+}
+
+function formatNutriMsg(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/^### (.*)/gm, '<strong style="color:var(--accent)">$1</strong>')
+    .replace(/^## (.*)/gm, '<strong style="color:var(--accent)">$1</strong>')
+    .replace(/^- (.*)/gm, '• $1')
+    .replace(/\n/g, '<br>');
+}
+
+function addMsg(text, who, isTemp=false) {
+  const el = document.createElement('div');
+  el.className = `msg msg-${who}${isTemp?' msg-loading':''}`;
+  el.innerHTML = text;
+  const container = document.getElementById('chat-messages');
+  container.appendChild(el);
+  container.scrollTop = container.scrollHeight;
+  return el;
+}
+
+function updateFoodLog(msg) {
+  const today = new Date().toLocaleDateString('fr-FR');
+  const el = document.getElementById('food-log-today');
+  if(el) {
+    const words = msg.slice(0,120);
+    el.innerHTML = `<div style="font-size:11px;color:var(--text);line-height:1.6">${words}${msg.length>120?'...':''}<br><span style="font-size:9px;color:var(--muted);font-family:'DM Mono',monospace">${today}</span></div>`;
+  }
+}
+
+function quickMsg(msg) {
+  document.getElementById('chat-input').value = msg;
+  sendNutriMsg();
+}
+
+function clearNutriChat() {
+  document.getElementById('chat-messages').innerHTML = `
+    <div class="msg msg-ai">
+      <strong>Coach Nutrition IA 🥗</strong><br><br>
+      Chat effacé. Je suis prêt pour de nouvelles questions !<br>
+      Profil : <strong>${state.currentWeight}kg · 168cm · 27 ans</strong>
+    </div>`;
+}
+
+function getCurrentPhaseLabel() {
+  const total = Object.values(state.sessions).filter(s=>s.done).length;
+  if(total < 16) return "Phase 1 — Fondation (base aérobie)";
+  if(total < 40) return "Phase 2 — Développement (VMA + Seuil)";
+  if(total < 58) return "Phase 3 — Spécifique (allure cible 5'00\"/km)";
+  return "Phase 4 — Affûtage (fraîcheur maximale)";
+}
+
+// ══════════════════════════════════════════════════════════
+// DASHBOARD UPDATE
+// ══════════════════════════════════════════════════════════
+function updateDashboard() {
+  // Count sessions
+  let done=0, total=0, p1d=0,p1t=0,p2d=0,p2t=0,p3d=0,p3t=0,p4d=0,p4t=0;
+  PHASES.forEach((ph,pi) => {
+    ph.weeks.forEach(wk => {
+      wk.days.forEach((day,di) => {
+        if(day.type==='rest') return;
+        total++; if(pi===0)p1t++; if(pi===1)p2t++; if(pi===2)p3t++; if(pi===3)p4t++;
+        const s = state.sessions[getSessId(wk.num,di)];
+        if(s&&s.done){ done++; if(pi===0)p1d++; if(pi===1)p2d++; if(pi===2)p3d++; if(pi===3)p4d++; }
+      });
+    });
+  });
+  document.getElementById('d-done').textContent = done;
+  document.getElementById('d-total').textContent = total;
+
+  const pct = (d,t) => t?Math.round(d/t*100):0;
+  const setBar = (id,v) => { const el=document.getElementById(id); if(el){el.style.width=v+'%'; el.closest('.prog-row')&&(el.closest('.prog-row').querySelector('.prog-pct').textContent=v+'%');} };
+  ['pb1','pb2','pb3','pb4'].forEach((id,i) => {
+    const vals = [[p1d,p1t],[p2d,p2t],[p3d,p3t],[p4d,p4t]];
+    setBar(id, pct(...vals[i]));
+    document.getElementById(id.replace('pb','pt')).textContent = pct(...vals[i])+'%';
+  });
+  setBar('pb-total', pct(done,total));
+  document.getElementById('pt-total').textContent = pct(done,total)+'%';
+
+  // Current phase
+  const phaseNames = ['Fondation','Développement','Spécifique','Affûtage'];
+  const phaseIdx = p4d>0?3:p3d>0?2:p2d>0?1:0;
+  document.getElementById('d-phase').textContent = phaseNames[phaseIdx];
+  document.getElementById('d-phase-sub').textContent = `${[p1d,p2d,p3d,p4d][phaseIdx]} séances réalisées`;
+
+  // Weight
+  if(state.weights.length) {
+    const last = state.weights[state.weights.length-1];
+    document.getElementById('d-weight').textContent = last.kg.toFixed(1);
+    if(state.weights.length>1) {
+      const prev = state.weights[state.weights.length-2];
+      const diff = (last.kg - prev.kg).toFixed(1);
+      const el = document.getElementById('d-weight-trend');
+      el.textContent = diff > 0 ? `+${diff}kg` : `${diff}kg`;
+      el.className = 'stat-trend ' + (diff > 0 ? 'up' : 'down');
+    }
+  }
+
+  // Average rating last 7 days
+  const recent = Object.values(state.sessions).filter(s=>s.done&&s.rating>0);
+  if(recent.length) {
+    const avg = (recent.reduce((a,s)=>a+s.rating,0)/recent.length).toFixed(1);
+    document.getElementById('d-rating').textContent = avg;
+  }
+
+  // Recent sessions
+  const recents = Object.entries(state.sessions)
+    .filter(([,s])=>s.done)
+    .sort((a,b)=>new Date(b[1].date||0)-new Date(a[1].date||0))
+    .slice(0,5);
+  const recDiv = document.getElementById('recent-sessions');
+  if(recents.length) {
+    recDiv.innerHTML = recents.map(([id,s]) => {
+      const isGym = s.type==='gym';
+      const stars = s.rating ? Array(10).fill(0).map((_,i)=>`<span class="star ${i<s.rating?'on':''}" style="font-size:10px">★</span>`).join('') : '';
+      return `<div class="sess-log-item">
+        <span class="sess-log-type pill ${isGym?'pill-gym':'pill-run'}">${isGym?'SALLE':'COURSE'}</span>
+        <span class="sess-log-name">${s.label||id}</span>
+        <span class="sess-log-rating">${stars.substring(0,stars.indexOf('</span>',s.rating*7+1)+6)}</span>
+        <span class="sess-log-date">${s.date||''}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // AI tip update
+  if(done > 0 && recent.length > 0) {
+    const avgRating = recent.reduce((a,s)=>a+s.rating,0)/recent.length;
+    let tip = '';
+    if(avgRating < 5) tip = `⚠️ Ton ressenti moyen est de ${(avgRating).toFixed(1)}/10 sur tes dernières séances. Pense à augmenter ton temps de sommeil et à revoir ta nutrition post-effort. Une semaine de relâche peut être nécessaire.`;
+    else if(avgRating >= 8) tip = `🚀 Excellent ressenti sur tes dernières séances (${(avgRating).toFixed(1)}/10) ! Tu peux envisager d'intensifier légèrement ou de maintenir ce rythme. Veille à la récupération.`;
+    else tip = `✅ Bon ressenti (${(avgRating).toFixed(1)}/10). Programme bien toléré. Continue sur cette lancée et reste attentive à l'hydratation et au sommeil.`;
+    document.getElementById('ai-tip-text').textContent = tip;
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════
+function closeModal() {
+  document.getElementById('log-modal').classList.remove('open');
+}
+document.getElementById('log-modal').addEventListener('click', e => {
+  if(e.target.id==='log-modal') closeModal();
+});
+
+function switchTab(idx) {
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+}
+
+function updateNutriWeight() {
+  const v = parseFloat(document.getElementById('nutri-weight').value);
+  if(isNaN(v)||v<30||v>150) return;
+  state.currentWeight = v;
+  state.weights.push({date:new Date().toISOString().split('T')[0], kg:v});
+  save(); renderWeightLog(); updateNutriMacros();
+  document.getElementById('nutri-weight').value='';
+  document.getElementById('n-weight').textContent = v.toFixed(1);
+  document.getElementById('n-imc').textContent = (v/(1.68*1.68)).toFixed(1);
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+load();
+document.getElementById('weight-date').value = new Date().toISOString().split('T')[0];
+renderPlanning();
+renderGymHistory();
+renderPerfChart();
+renderWeightLog();
+updateDashboard();
+updateNutriMacros();
+</script>
+</body>
+</html>
